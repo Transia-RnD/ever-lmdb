@@ -1,12 +1,12 @@
-// import { Wallet, convertStringToHex } from '@transia/xrpl'
-import { Wallet } from '@transia/xrpl'
+// import { Wallet, convertStringToHex } from 'xrpl'
+import { Wallet } from 'xrpl'
 import fs from 'fs'
 import path from 'path'
 import { ApiService, prepareRequest } from '../../dist/npm/src/services/api'
 import { Sdk } from '../../dist/npm/src/services/sdk'
 import { User } from '../../dist/npm/src/services/types'
 // import { decodeModel } from '../../dist/npm/src/util/decode'
-import { MessageModel } from '../fixtures/models'
+// import { MessageModel } from '../fixtures/models'
 
 export function readFile(filename: string): string {
   const jsonString = fs.readFileSync(

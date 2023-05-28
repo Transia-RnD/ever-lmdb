@@ -1,6 +1,6 @@
-import { deriveAddress } from '@transia/xrpl'
+import { deriveAddress } from 'xrpl'
 import { Auth, Request, Rule, Rules } from './types'
-import { verify } from '@transia/ripple-keypairs/dist'
+import { verify } from 'ripple-keypairs/dist'
 
 // const getId = (string: string) => {
 //   const regex = /{([^}]+)}/;

@@ -1,4 +1,4 @@
-import { convertStringToHex } from '@transia/xrpl'
+import { convertStringToHex } from 'xrpl'
 import { prepareRequest } from './api'
 import { Request } from '../rules/types'
 // import { Request, Response } from '../rules/types'

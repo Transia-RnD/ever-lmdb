@@ -1,4 +1,4 @@
-import { deriveAddress, sign } from '@transia/ripple-keypairs'
+import { deriveAddress, sign } from 'ripple-keypairs'
 import { UInt64, VarString } from '../../dist/npm/src/util/types'
 // import { BaseModel, Metadata } from '../../dist/npm/src/models'
 import { validateRequestAgainstRules } from '../../dist/npm/src/rules'
@@ -13,34 +13,34 @@ export function readFile(filename: string): string {
   return jsonString.toString()
 }
 
-const SampleModel = class extends BaseModel {
-  updatedTime: UInt64
-  updatedBy: VarString
-  message: VarString
+// const SampleModel = class extends BaseModel {
+//   updatedTime: UInt64
+//   updatedBy: VarString
+//   message: VarString
 
-  constructor(updatedTime: UInt64, updatedBy: VarString, message: VarString) {
-    super()
-    this.updatedTime = updatedTime
-    this.updatedBy = updatedBy
-    this.message = message
-  }
+//   constructor(updatedTime: UInt64, updatedBy: VarString, message: VarString) {
+//     super()
+//     this.updatedTime = updatedTime
+//     this.updatedBy = updatedBy
+//     this.message = message
+//   }
 
-  getMetadata(): Metadata {
-    return [
-      { field: 'updatedTime', type: 'uint64' },
-      { field: 'updatedBy', type: 'varString', maxStringLength: 32 },
-      { field: 'message', type: 'varString', maxStringLength: 250 },
-    ]
-  }
+//   getMetadata(): Metadata {
+//     return [
+//       { field: 'updatedTime', type: 'uint64' },
+//       { field: 'updatedBy', type: 'varString', maxStringLength: 32 },
+//       { field: 'message', type: 'varString', maxStringLength: 250 },
+//     ]
+//   }
 
-  toJSON() {
-    return {
-      updatedTime: this.updatedTime,
-      updatedBy: this.updatedBy,
-      message: this.message,
-    }
-  }
-}
+//   toJSON() {
+//     return {
+//       updatedTime: this.updatedTime,
+//       updatedBy: this.updatedBy,
+//       message: this.message,
+//     }
+//   }
+// }
 
 describe('end to end', () => {
   test('end to end success', () => {

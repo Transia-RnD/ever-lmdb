@@ -1,8 +1,8 @@
-import { deriveAddress } from '@transia/xrpl'
+import { deriveAddress } from 'xrpl'
 import { Request, Response } from '../rules/types'
 import { DbService } from './db'
 import { User } from './types'
-import { sign } from '@transia/ripple-keypairs/dist'
+import { sign } from 'ripple-keypairs/dist'
 
 export function prepareRequest(
   id: string,
@@ -15,12 +15,12 @@ export function prepareRequest(
 ) {
   return {
     id: id,
+    type: 'type',
     database: database,
     method: method,
     path: path,
     binary: binary,
     auth: {
-      type: 'xrpl',
       uid: deriveAddress(publicKey),
       signature: sign(binary, privateKey),
       pk: publicKey,

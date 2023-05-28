@@ -1,14 +1,13 @@
 export interface Auth {
   uid: string
-  type: string
   signature: string
   pk: string
 }
 
 export interface Request {
-  id: string
-  type: string
-  database: string
+  id: string // of request not id of object
+  type: string // 
+  database: string // "one"
   method: string
   path: string
   data?: Record<string, any>

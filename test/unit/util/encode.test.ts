@@ -12,7 +12,7 @@ import {
 import {
   UInt64,
   UInt8,
-  VarModelArray,
+  // VarModelArray,
   VarString,
   XRPAddress,
 } from '../../../dist/npm/src/util/types'
