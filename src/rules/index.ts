@@ -21,8 +21,10 @@ function validateXrplAuth(data: string, auth: Auth): void {
     verify(data, auth.signature, auth.pk) &&
     deriveAddress(auth.pk) === auth.uid
   ) {
+    console.log('XRPL REQUEST SUCCESS')
     return
   }
+  console.log('XRPL REQUEST FAILED')
   throw Error('Invalid Request Signature')
 }
 
@@ -42,35 +44,35 @@ function validateAuth(str: string, pathId: string, req: Request): void {
 
   const arr = str.split(' ')
   if (arr[0] === 'request.auth.uid' && arr[1] === '!=' && arr[2] === 'null') {
-    // console.log('request.auth.uid != null')
+    console.log('request.auth.uid != null')
     // console.log(auth.uid === null)
     if (auth.uid === null) {
       throw Error('Invalid Permissions: Auth must not be null')
     }
   }
   if (arr[0] === 'request.auth.uid' && arr[1] === '==' && arr[2] === 'null') {
-    // console.log('request.auth.uid == null')
+    console.log('request.auth.uid == null')
     // console.log(auth.uid !== null)
     if (auth.uid !== null) {
       throw Error('Invalid Permissions: Auth must be null')
     }
   }
   if (arr[4] === 'request.auth.uid' && arr[5] === '!=' && arr[6] === 'userId') {
-    // console.log('request.auth.uid != uid')
+    console.log('request.auth.uid != uid')
     // console.log(auth.uid === pathId)
     if (auth.uid === pathId) {
       throw Error('Invalid Permissionsr: Invalid Id')
     }
   }
   if (arr[4] === 'request.auth.uid' && arr[5] === '==' && arr[6] === 'userId') {
-    // console.log('request.auth.uid == uid')
+    console.log('request.auth.uid == uid')
     // console.log(auth.uid !== pathId)
     if (auth.uid !== pathId) {
       throw Error('Invalid Permissions: Invalid Id')
     }
   }
   if (arr[8] === 'request.auth.type' && arr[9] === '==' && arr[10] === 'xrpl') {
-    // console.log('request.auth.type == "xrpl"')
+    console.log('request.auth.type == "xrpl"')
     // console.log(auth.type !== 'xrpl')
     if (!auth.signature || !auth.pk) {
       throw Error('Invalid Request Parameters')
@@ -132,22 +134,21 @@ export function validateRequestAgainstRules(req: Request, rules: Rules): void {
       }
     }
 
-    if (pathParam === '/{document=**}') {
-      console.log('ROOT DB')
-      const rule: Rule = rules['/databases/{database}/documents'][pathParam]
-      if (rule.read && req.method === 'GET') {
-        return
-      } else if (
-        rule.write &&
-        (req.method === 'POST' ||
-          req.method === 'PUT' ||
-          req.method === 'DELETE')
-      ) {
-        return
-      } else {
-        throw Error('Invalid Permissions')
-      }
-    }
+    // if (pathParam === '/{document=**}') {
+    //   console.log('ROOT DB')
+    //   const rule: Rule = rules['/databases/{database}/documents'][pathParam]
+    //   if (rule.read && req.method === 'GET') {
+    //     return
+    //   } else if (
+    //     rule.write &&
+    //     (req.method === 'POST' ||
+    //       req.method === 'PUT' ||
+    //       req.method === 'DELETE')
+    //   ) {
+    //     return
+    //   } else {
+    //     throw Error('Invalid Permissions')
+    //   }
+    // }
   }
-  throw Error('Invalid Permissions')
 }

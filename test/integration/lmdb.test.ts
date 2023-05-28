@@ -101,13 +101,6 @@ describe('end to end', () => {
     const publicKey = testContext.alice.publicKey
     const privateKey = testContext.alice.privateKey
     const binary = model.encode()
-    const sdk = new Sdk('one', testContext.alice, null)
-    const ref = sdk
-      .collection('Messages')
-      .document(testContext.alice.classicAddress)
-    const response = ref.set(binary)
-    console.log(response)
-
     const request = prepareRequest(
       '1',
       'one',

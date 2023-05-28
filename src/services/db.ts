@@ -29,7 +29,9 @@ export class DbService {
     const resObj: Response = {}
     try {
       this.#db.open()
-      const rules: Rules = JSON.parse(readFile('rules.json'))
+      const rules: Rules = JSON.parse(
+        readFile(path.join(process.cwd(), 'rules.json'))
+      )
       validateRequestAgainstRules(this.#request, rules)
       await this.#db.create(id, JSON.stringify({ ...data }))
       resObj.snapshot = { id: id }
@@ -52,7 +54,9 @@ export class DbService {
     const resObj: Response = {}
     try {
       this.#db.open()
-      const rules: Rules = JSON.parse(readFile('rules.json'))
+      const rules: Rules = JSON.parse(
+        readFile(path.join(process.cwd(), 'rules.json'))
+      )
       validateRequestAgainstRules(this.#request, rules)
       await this.#db.create(id, binary)
       resObj.snapshot = { id: id }
@@ -72,7 +76,9 @@ export class DbService {
     const resObj: Response = {}
     try {
       this.#db.open()
-      const rules: Rules = JSON.parse(readFile('rules.json'))
+      const rules: Rules = JSON.parse(
+        readFile(path.join(process.cwd(), 'rules.json'))
+      )
       validateRequestAgainstRules(this.#request, rules)
       const result = await this.#db.get(id)
       resObj.snapshot = { binary: result }
@@ -93,7 +99,9 @@ export class DbService {
     const resObj: Response = {}
     try {
       this.#db.open()
-      const rules: Rules = JSON.parse(readFile('rules.json'))
+      const rules: Rules = JSON.parse(
+        readFile(path.join(process.cwd(), 'rules.json'))
+      )
       validateRequestAgainstRules(this.#request, rules)
       const result = await this.#db.update(id, JSON.stringify({ ...data }))
       resObj.snapshot = { data: result }
@@ -114,7 +122,9 @@ export class DbService {
     const resObj: Response = {}
     try {
       this.#db.open()
-      const rules: Rules = JSON.parse(readFile('rules.json'))
+      const rules: Rules = JSON.parse(
+        readFile(path.join(process.cwd(), 'rules.json'))
+      )
       validateRequestAgainstRules(this.#request, rules)
       const result = await this.#db.update(id, binary)
       resObj.snapshot = { data: result }
@@ -133,7 +143,9 @@ export class DbService {
     const resObj: Response = {}
     try {
       this.#db.open()
-      const rules: Rules = JSON.parse(readFile('rules.json'))
+      const rules: Rules = JSON.parse(
+        readFile(path.join(process.cwd(), 'rules.json'))
+      )
       validateRequestAgainstRules(this.#request, rules)
       const result = await this.#db.delete(id)
       console.log(result)

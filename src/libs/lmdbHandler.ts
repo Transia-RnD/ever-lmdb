@@ -100,6 +100,7 @@ export class LMDBDatabase {
         type: 'error',
       }
     }
+    console.log('LMDB UPDATE')
     return true
   }
 

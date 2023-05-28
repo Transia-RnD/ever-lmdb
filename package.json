@@ -1,6 +1,6 @@
 {
-  "name": "ever-lmdb",
-  "version": "1.0.0",
+  "name": "ever-lmdb-sdk",
+  "version": "1.0.1",
   "description": "",
   "scripts": {
     "lint": "eslint ./src/**/* --ext .ts",
@@ -11,6 +11,8 @@
     "test:integration": "jest --config=jest.config.integration.js"
   },
   "author": "",
+  "main": "dist/npm/src/index.js",
+  "files": ["dist/**/*"],
   "license": "ISC",
   "devDependencies": {
     "@tsconfig/node16": "^1.0.4",

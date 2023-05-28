@@ -36,13 +36,20 @@ import { Request } from '../rules/types'
 //   return path
 // }
 
-export class KeyPair {
+export class EverKeyPair {
   publicKey: string = null
   privateKey: string = null
 
   constructor(publicKey: string, privateKey: string) {
     this.publicKey = publicKey
     this.privateKey = privateKey
+  }
+
+  fromHPKP(publicKey: string, privateKey: string): EverKeyPair {
+    return new EverKeyPair(
+      publicKey.toUpperCase(),
+      privateKey.toUpperCase().slice(0, 66)
+    )
   }
 }
 
@@ -85,7 +92,7 @@ export class DocumentReference {
       this.col.sdk.keypair.publicKey,
       this.col.sdk.keypair.privateKey
     )
-    await this.col.sdk.read(request)
+    return await this.col.sdk.read(request)
   }
 
   async set(binary: string) {
@@ -143,11 +150,11 @@ export class DocumentReference {
 
 export class Sdk {
   client: any = null
-  keypair: KeyPair = null
+  keypair: EverKeyPair = null
   database: string = null
   promiseMap = new Map()
 
-  constructor(database: string, keypair: KeyPair, client: any) {
+  constructor(database: string, keypair: EverKeyPair, client: any) {
     this.database = database
     this.keypair = keypair
     this.client = client
@@ -161,7 +168,7 @@ export class Sdk {
     let resolver, rejecter
     try {
       const inpString = JSON.stringify(request)
-      this.client.submitContractInput(inpString).then((input: any) => {
+      this.client.hp.submitContractInput(inpString).then((input: any) => {
         input.submissionStatus.then((s: any) => {
           if (s.status !== 'accepted') {
             console.log(`Ledger_Rejection: ${s.reason}`)
@@ -173,7 +180,7 @@ export class Sdk {
       return new Promise((resolve, reject) => {
         resolver = resolve
         rejecter = reject
-        this.promiseMap.set(request.id, {
+        this.client.promiseMap.set(request.id, {
           resolver: resolver,
           rejecter: rejecter,
         })
@@ -187,7 +194,7 @@ export class Sdk {
   async read(request: Request) {
     try {
       const inpString = JSON.stringify(request)
-      return this.client.submitContractReadRequest(inpString)
+      return await this.client.hp.submitContractReadRequest(inpString)
     } catch (error) {
       console.log(error)
       throw error
