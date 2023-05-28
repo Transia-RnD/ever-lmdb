@@ -1,9 +1,3 @@
----
-title: Getting started
-pageTitle: Everlmdb - Secure Evernode Contract DB.
-description: Securly store and retrieve data in evernode smart contracts using lmdb
----
-
 # Ever-Lmdb-Sdk
 
 Learn how to get ever-lmdb-sdk set up in your project in under thirty minutes.
