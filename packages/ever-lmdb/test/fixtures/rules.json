@@ -1,0 +1,10 @@
+{
+  "rules_version": "1",
+  "service": "cloud.lmdb",
+  "/databases/{database}/documents": {
+    "/{document=**}": {
+      "read": true,
+      "write": true
+    }
+  }
+}
