@@ -183,6 +183,7 @@ export class Sdk {
       throw error
     }
   }
+
   async read(request: Request) {
     try {
       const inpString = JSON.stringify(request)
