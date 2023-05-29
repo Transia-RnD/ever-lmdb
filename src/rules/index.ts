@@ -87,68 +87,73 @@ export function validateRequestAgainstRules(req: Request, rules: Rules): void {
   const pathParams: string[] = Object.keys(
     rules['/databases/{database}/documents']
   )
+  let validated = false
   for (let i = 0; i < pathParams.length; i++) {
     const pathParam = pathParams[i]
     console.log(`CHECKING RULE PATH: ${pathParam}`)
     console.log(`CHECKING REQ PATH: ${req.path}`)
-    // const idName = getId(pathParam)
     const ruleParamRegex = pathParam.replace(/\{.*\}/, '([A-Za-z0-9]{1,64})')
     const result = req.path.match(ruleParamRegex)
     if (result) {
-      console.log(`MATCH: ${result}`)
-      const pathId = result[1]
-      const rule: Rule = rules['/databases/{database}/documents'][pathParam]
+      if (pathParam !== '/{document=**}') {
+        console.log(`MATCH: ${result}`)
+        const pathId = result[1]
+        const rule: Rule = rules['/databases/{database}/documents'][pathParam]
 
-      // READ
-      if (rule.read !== null && req.method === 'GET') {
-        console.log('READ VALIDATION')
-        // AUTH VALIDATION
-        if (typeof rule.read === 'string') {
-          if (rule.read.includes('request.auth.uid')) {
-            validateAuth(rule.read, pathId, req as Request)
+        // READ
+        if (rule.read !== null && req.method === 'GET') {
+          console.log('READ VALIDATION')
+          // AUTH VALIDATION
+          if (typeof rule.read === 'string') {
+            if (rule.read.includes('request.auth.uid')) {
+              validateAuth(rule.read, pathId, req as Request)
+            }
+          }
+          // NO VALIDATION
+          if ((rule.read as boolean) === false) {
+            throw Error('Invalid Permissions')
+          }
+
+          // WRITE
+        } else if (
+          rule.write !== null &&
+          (req.method === 'POST' ||
+            req.method === 'PUT' ||
+            req.method === 'DELETE')
+        ) {
+          console.log('WRITE VALIDATION')
+          // AUTH VALIDATION
+          if (typeof rule.write === 'string') {
+            if (rule.write.includes('request.auth.uid')) {
+              validateAuth(rule.write, pathId, req as Request)
+            }
+          }
+          // NO VALIDATION
+          if ((rule.write as boolean) === false) {
+            console.log('rule.write === false')
+            throw Error('Invalid Permissions')
           }
         }
-        // NO VALIDATION
-        if ((rule.read as boolean) === false) {
-          throw Error('Invalid Permissions')
-        }
-
-        // WRITE
+        console.log(`${result} VALIDATED`)
+        validated = true
+      }
+    }
+    if (!validated && pathParam === '/{document=**}') {
+      console.log('ROOT DB VALIDATION')
+      const rule: Rule = rules['/databases/{database}/documents'][pathParam]
+      if (rule.read === true && req.method === 'GET') {
+        return
       } else if (
-        rule.write !== null &&
+        rule.write === true &&
         (req.method === 'POST' ||
           req.method === 'PUT' ||
           req.method === 'DELETE')
       ) {
-        console.log('WRITE VALIDATION')
-        // AUTH VALIDATION
-        if (typeof rule.write === 'string') {
-          if (rule.write.includes('request.auth.uid')) {
-            validateAuth(rule.write, pathId, req as Request)
-          }
-        }
-        // NO VALIDATION
-        if ((rule.write as boolean) === false) {
-          throw Error('Invalid Permissions')
-        }
+        return
+      } else {
+        throw Error('Invalid Permissions')
       }
     }
-
-    // if (pathParam === '/{document=**}') {
-    //   console.log('ROOT DB')
-    //   const rule: Rule = rules['/databases/{database}/documents'][pathParam]
-    //   if (rule.read && req.method === 'GET') {
-    //     return
-    //   } else if (
-    //     rule.write &&
-    //     (req.method === 'POST' ||
-    //       req.method === 'PUT' ||
-    //       req.method === 'DELETE')
-    //   ) {
-    //     return
-    //   } else {
-    //     throw Error('Invalid Permissions')
-    //   }
-    // }
+    console.log('VALIDATION BY POE')
   }
 }
