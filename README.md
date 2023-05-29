@@ -1,80 +1,97 @@
-# Ever-Lmdb-Sdk
+# Everlmdb - Secure Evernode Contract DB.
 
-Learn how to get ever-lmdb-sdk set up in your project in under thirty minutes.
+Learn how to get ever-lmdb-sdk set up in your project in under thirty minutes. {% .lead %}
+
+{% quick-links %}
+
+{% quick-link title="Installation" icon="installation" href="/" description="Step-by-step guides to setting up your system and installing the library." /%}
+
+{% quick-link title="Security Rules" icon="presets" href="/" description="Learn how the security rules work. Customize them to your usecase" /%}
+
+{% quick-link title="Xrpl Signed Request" icon="plugins" href="/" description="Extend the library with xrpl signed requests for secure storage." /%}
+
+{% quick-link title="API reference" icon="theming" href="/" description="Learn to easily customize and modify your dapp's storage to fit your needs." /%}
+
+{% /quick-links %}
 
 ---
 
 ## Quick start
 
-To get started using ever-lmdb-sdk you will need to install the dependency into your evernode contract and your evernode client.
+Ever-lmdb-sdk is a powerful library that allows secure data storage and retrieval in Evernode smart contracts using LMDB. In this guide, we will walk you through the steps required to set up Ever-lmdb-sdk in your project.
 
 ### Installing dependencies
 
-Sit commodi iste iure molestias qui amet voluptatem sed quaerat. Nostrum aut pariatur. Sint ipsa praesentium dolor error cumque velit tenetur quaerat exercitationem. Consequatur et cum atque mollitia qui quia necessitatibus.
+To install Ever-lmdb-sdk, you'll need to have Node.js and Yarn installed on your system. Once you have these dependencies installed, you can install Ever-lmdb-sdk in your Evernode contract and your Evernode client using the following command:
 
 ```shell
 yarn add ever-lmdb-sdk
 ```
 
-Possimus saepe veritatis sint nobis et quam eos. Architecto consequatur odit perferendis fuga eveniet possimus rerum cumque. Ea deleniti voluptatum deserunt voluptatibus ut non iste. Provident nam asperiores vel laboriosam omnis ducimus enim nesciunt quaerat. Minus tempora cupiditate est quod.
+### Configuring the Contract
 
-{% callout type="warning" title="Oh no! Something bad happened!" %}
-This is what a disclaimer message looks like. You might want to include inline `code` in it. Or maybe you’ll want to include a [link](/) in it. I don’t think we should get too carried away with other scenarios like lists or tables — that would be silly.
-{% /callout %}
+To configure your contract to work with Ever-lmdb-sdk, you'll need to import the ApiService from the library and create an instance of it inside your contract function.
 
-### Configuring the contract
+```ts
+const HotPocket = require("hotpocket-nodejs-contract");
+const { ApiService } = require("ever-lmdb-sdk"); // import ApiService
 
-Sit commodi iste iure molestias qui amet voluptatem sed quaerat. Nostrum aut pariatur. Sint ipsa praesentium dolor error cumque velit tenetur quaerat exercitationem. Consequatur et cum atque mollitia qui quia necessitatibus.
-
-```js
-// cache-advance.config.js
-export default {
-  strategy: 'predictive',
-  engine: {
-    cpus: 12,
-    backups: ['./storage/cache.wtf'],
-  },
-}
+const contract = async (ctx) => {
+  const isReadOnly = ctx.readonly;
+  const api = new ApiService(); // init the ApiService
+  for (const user of ctx.users.list()) {
+    for (const input of user.inputs) {
+      const buf = await ctx.users.read(input);
+      const request = JSON.parse(buf);
+      await api.handleRequest(user, request, isReadOnly); // add the api handler
+    }
+  }
+};
+const hpc = new HotPocket.Contract();
+hpc.init(contract);
 ```
 
-Possimus saepe veritatis sint nobis et quam eos. Architecto consequatur odit perferendis fuga eveniet possimus rerum cumque. Ea deleniti voluptatum deserunt voluptatibus ut non iste. Provident nam asperiores vel laboriosam omnis ducimus enim nesciunt quaerat. Minus tempora cupiditate est quod.
+{% callout type="warning" title="Create the `mydata` directory in the `dist` directory" %}
+For lmdb database to work we need to create an empty directory in the root of the `dist` directory.
+{% /callout %}
 
-{% callout title="You should know!" %}
-This is what a disclaimer message looks like. You might want to include inline `code` in it. Or maybe you’ll want to include a [link](/) in it. I don’t think we should get too carried away with other scenarios like lists or tables — that would be silly.
+{% callout title="Copy the `rules.sample.json` file to the `dist` directory" %}
+For lmdb database rules to work we must have a default `rules.json` file at the root of the dist directory.
 {% /callout %}
 
 ---
 
-### Configuring the client
+### Configuring the Client
 
-Sit commodi iste iure molestias qui amet voluptatem sed quaerat. Nostrum aut pariatur. Sint ipsa praesentium dolor error cumque velit tenetur quaerat exercitationem. Consequatur et cum atque mollitia qui quia necessitatibus.
+To interact with the Ever-lmdb-sdk from your JavaScript client application, you'll first need to import and initialize the necessary components from the library. Here's an example of how this might look:
 
-```js
-// cache-advance.config.js
-export default {
-  strategy: 'predictive',
-  engine: {
-    cpus: 12,
-    backups: ['./storage/cache.wtf'],
-  },
+```ts
+const HotPocket = require("hotpocket-js-client");
+const {
+  Sdk,
+  EverKeyPair,
+  MessageModel,
+  decodeModel,
+  Uint8ArrayToHex
+} = require('ever-lmdb-sdk')
+const { deriveAddress } = require('ripple-keypairs');
+
+var client = new ClientApp();
+  if (await client.init()) {
+    
+    const everKp = new EverKeyPair(
+      Uint8ArrayToHex(client.userKeyPair.publicKey), 
+      Uint8ArrayToHex(client.userKeyPair.privateKey).slice(0, 66)
+    )
+    const sdk = new Sdk('one', everKp, client)
+    // ...
+  }
 }
 ```
-
-Possimus saepe veritatis sint nobis et quam eos. Architecto consequatur odit perferendis fuga eveniet possimus rerum cumque. Ea deleniti voluptatum deserunt voluptatibus ut non iste. Provident nam asperiores vel laboriosam omnis ducimus enim nesciunt quaerat. Minus tempora cupiditate est quod.
-
-{% callout title="You should know!" %}
-This is what a disclaimer message looks like. You might want to include inline `code` in it. Or maybe you’ll want to include a [link](/) in it. I don’t think we should get too carried away with other scenarios like lists or tables — that would be silly.
-{% /callout %}
-
----
-
-## Basic usage
-
-Praesentium laudantium magni. Consequatur reiciendis aliquid nihil iusto ut in et. Quisquam ut et aliquid occaecati. Culpa veniam aut et voluptates amet perspiciatis. Qui exercitationem in qui. Vel qui dignissimos sit quae distinctio.
 
 ### Your first model
 
-First you need to create a custom model. Place this somewhere and then access it in your contract file. (You could also place this in the contract file.)
+Before you can store data using Ever-lmdb-sdk, you'll need to create a custom data model that represents the object you want to store.
 
 The `CustomModel` is an example of a custom model derived from the `BaseModel`. This model has two fields: `name` and `age`. Other custom models can define their own fields and metadata.
 
@@ -102,41 +119,50 @@ The `getMetadata()` method returns an array of metadata elements, each of which 
 
 Binary models allow efficient serialization and deserialization of complex data structures in binary hex.
 
-### Initialize the sdk
+### Storing Data
 
-Then you need to initialize the sdk inside the hotpocket smart contract.
-
-```ts
-const sdk = new Sdk('one', hp_keypair, hp_client)
-```
-
-### Construct the path
-
-Build the path using `collection` and `document` functions.
+Once you have defined your custom data model, you can use the Ever-lmdb-sdk to store it in an Evernode smart contract. Here's an example of how this might look:
 
 ```ts
-const ref = sdk.collection('Messages').document(address)
+// Construct a reference to the collection and document you want 
+// to store the data in
+const collectionRef = sdk.collection('people');
+const documentRef = collectionRef.document('123');
+
+// Create a new instance of your custom model
+const person = new CustomModel('Alice Smith', 30);
+
+// Use the `set` function to store the data
+await documentRef.set(person.encode());
+
+// You can also retrieve the data by calling `get` on the reference
+const snapshot = await documentRef.get();
+const decoded = decodeModel(snapshot.binary, CustomModel)
+console.log(decoded.name); // Output: "Alice Smith"
 ```
 
-### Initialize the model and encode
+### Retrieving Data
 
-Create a new Custom model. TODO: DA import json
+To retrieve data stored in an Evernode smart contract using Ever-lmdb-sdk, you can use the `get` function on the appropriate reference. Here's an example:
 
 ```ts
-const model = new CustomModel(
-  'John Doe',
-  BigInt(31),
-)
-const binary = model.encode()
+// Construct a reference to the collection and document that 
+// contains the data
+const collectionRef = sdk.collection('people');
+const documentRef = collectionRef.document('123');
+
+// Use the `get` function to retrieve the data
+const snapshot = await documentRef.get();
+
+// Decode the binary data using your custom model
+const person = decodeModel(snapshot.binary, CustomModel);
+
+// Use the data as needed
+console.log(person.name); // Output: "Alice Smith"
+console.log(person.age); // Output: 30
 ```
 
-### Call the sdk function
-
-Finally make the sdk call to the evernode smart contract. In this case its saving a new document at the reference you chose above.
-
-```ts
-await ref.set(binary)
-```
+---
 
 # Getting help
 
