@@ -82,7 +82,7 @@ export class DocumentReference {
   async get() {
     const path = `${this.col.path}/${this.col.doc.path}`
     console.log(`GET: ${path}`)
-    console.log(convertStringToHex(path))
+    // console.log(convertStringToHex(path))
     const request = prepareRequest(
       '1',
       this.col.sdk.database,
@@ -97,8 +97,8 @@ export class DocumentReference {
 
   async set(binary: string) {
     const path = `${this.col.path}/${this.col.doc.path}`
-    console.log(`SET: ${path}`)
-    console.log(binary)
+    // console.log(`SET: ${path}`)
+    // console.log(binary)
     const request = prepareRequest(
       '1',
       this.col.sdk.database,
@@ -114,7 +114,7 @@ export class DocumentReference {
   async update(binary: string) {
     const path = `${this.col.path}/${this.col.doc.path}`
     console.log(`UPDATE: ${path}`)
-    console.log(binary)
+    // console.log(binary)
     const request = prepareRequest(
       '1',
       this.col.sdk.database,
@@ -130,7 +130,7 @@ export class DocumentReference {
   async delete() {
     const path = `${this.col.path}/${this.col.doc.path}`
     console.log(`DELETE: ${path}`)
-    console.log(convertStringToHex(path))
+    // console.log(convertStringToHex(path))
     const request = prepareRequest(
       '1',
       this.col.sdk.database,
@@ -168,7 +168,7 @@ export class Sdk {
     let resolver, rejecter
     try {
       const inpString = JSON.stringify(request)
-      this.client.hp.submitContractInput(inpString).then((input: any) => {
+      this.client.client.submitContractInput(inpString).then((input: any) => {
         input.submissionStatus.then((s: any) => {
           if (s.status !== 'accepted') {
             console.log(`Ledger_Rejection: ${s.reason}`)
@@ -194,7 +194,7 @@ export class Sdk {
   async read(request: Request) {
     try {
       const inpString = JSON.stringify(request)
-      return await this.client.hp.submitContractReadRequest(inpString)
+      return await this.client.client.submitContractReadRequest(inpString)
     } catch (error) {
       console.log(error)
       throw error
