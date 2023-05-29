@@ -42,45 +42,68 @@ function validateAuth(str: string, pathId: string, req: Request): void {
   // console.log(auth.signature)
   // console.log(auth.pk)
 
-  const arr = str.split(' ')
-  if (arr[0] === 'request.auth.uid' && arr[1] === '!=' && arr[2] === 'null') {
+  // const arr = str.split(' ')
+
+  if (str.includes('request.auth.uid') && str.includes('!= null')) {
     console.log('request.auth.uid != null')
-    // console.log(auth.uid === null)
     if (auth.uid === null) {
       throw Error('Invalid Permissions: Auth must not be null')
     }
   }
-  if (arr[0] === 'request.auth.uid' && arr[1] === '==' && arr[2] === 'null') {
-    console.log('request.auth.uid == null')
-    // console.log(auth.uid !== null)
-    if (auth.uid !== null) {
-      throw Error('Invalid Permissions: Auth must be null')
-    }
-  }
-  if (arr[4] === 'request.auth.uid' && arr[5] === '!=' && arr[6] === 'userId') {
-    console.log('request.auth.uid != uid')
-    // console.log(auth.uid === pathId)
-    if (auth.uid === pathId) {
-      throw Error('Invalid Permissionsr: Invalid Id')
-    }
-  }
-  if (arr[4] === 'request.auth.uid' && arr[5] === '==' && arr[6] === 'userId') {
-    console.log('request.auth.uid == uid')
-    // console.log(auth.uid !== pathId)
+  if (str.includes('request.auth.uid') && str.includes(`== ${pathId}`)) {
+    console.log(`request.auth.uid == ${pathId}`)
     if (auth.uid !== pathId) {
       throw Error('Invalid Permissions: Invalid Id')
     }
   }
-  if (arr[8] === 'request.auth.type' && arr[9] === '==' && arr[10] === 'xrpl') {
+  if (str.includes('request.auth.type') && str.includes('== xrpl')) {
     console.log('request.auth.type == "xrpl"')
-    // console.log(auth.type !== 'xrpl')
     if (!auth.signature || !auth.pk) {
-      throw Error('Invalid Request Parameters')
+      throw Error('Invalid Xrpl Signature Parameters')
     }
     validateXrplAuth(req.binary as string, auth)
   }
   console.log('AUTH VALIDATED')
   return
+
+  // if (arr[0] === 'request.auth.uid' && arr[1] === '!=' && arr[2] === 'null') {
+  //   console.log('request.auth.uid != null')
+  //   // console.log(auth.uid === null)
+  //   if (auth.uid === null) {
+  //     throw Error('Invalid Permissions: Auth must not be null')
+  //   }
+  // }
+  // if (arr[0] === 'request.auth.uid' && arr[1] === '==' && arr[2] === 'null') {
+  //   console.log('request.auth.uid == null')
+  //   // console.log(auth.uid !== null)
+  //   if (auth.uid !== null) {
+  //     throw Error('Invalid Permissions: Auth must be null')
+  //   }
+  // }
+  // if (arr[4] === 'request.auth.uid' && arr[5] === '!=' && arr[6] === 'userId') {
+  //   console.log('request.auth.uid != uid')
+  //   // console.log(auth.uid === pathId)
+  //   if (auth.uid === pathId) {
+  //     throw Error('Invalid Permissionsr: Invalid Id')
+  //   }
+  // }
+  // if (arr[4] === 'request.auth.uid' && arr[5] === '==' && arr[6] === 'userId') {
+  //   console.log('request.auth.uid == uid')
+  //   // console.log(auth.uid !== pathId)
+  //   if (auth.uid !== pathId) {
+  //     throw Error('Invalid Permissions: Invalid Id')
+  //   }
+  // }
+  // if (arr[8] === 'request.auth.type' && arr[9] === '==' && arr[10] === 'xrpl') {
+  //   console.log('request.auth.type == "xrpl"')
+  //   // console.log(auth.type !== 'xrpl')
+  //   if (!auth.signature || !auth.pk) {
+  //     throw Error('Invalid Request Parameters')
+  //   }
+  //   validateXrplAuth(req.binary as string, auth)
+  // }
+  // console.log('AUTH VALIDATED')
+  // return
 }
 
 export function validateRequestAgainstRules(req: Request, rules: Rules): void {

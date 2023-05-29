@@ -1,12 +1,11 @@
-const HotPocket = require('hotpocket-js-client')
-const { MessageModel } = require('ever-library/dist/npm/src/models')
-const { Sdk } = require('ever-library/dist/npm/src/services/sdk')
-const { deriveAddress } = require('xrpl')
-const {} = require('ripple-keypairs')
+// import HotPocket from 'hotpocket-js-client'
+// import { MessageModel } from 'ever-library/dist/npm/src/models'
+// import { Sdk } from 'ever-library/dist/npm/src/services/sdk'
+// import { deriveAddress } from 'ripple-keypairs'
 // const lmdb = require('node-lmdb');
 
-const nodeIp = process.env.REACT_APP_CONTRACT_NODE_IP || 'localhost'
-const nodePort = process.env.REACT_APP_CONTRACT_NODE_PORT || '8081'
+// const nodeIp = process.env.REACT_APP_CONTRACT_NODE_IP || 'localhost'
+// const nodePort = process.env.REACT_APP_CONTRACT_NODE_PORT || '8081'
 
 class InputStatus {
   status = ''
