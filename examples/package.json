@@ -13,6 +13,6 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "the-evernode-library": "/Users/dustedfloor/projects/transia-rnd/evernode-lmdb/common"
+    "ever-lmdb-sdk": "^1.0.1"
   }
 }
