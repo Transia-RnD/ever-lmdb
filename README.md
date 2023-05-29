@@ -2,18 +2,6 @@
 
 Learn how to get ever-lmdb-sdk set up in your project in under thirty minutes. {% .lead %}
 
-{% quick-links %}
-
-{% quick-link title="Installation" icon="installation" href="/" description="Step-by-step guides to setting up your system and installing the library." /%}
-
-{% quick-link title="Security Rules" icon="presets" href="/" description="Learn how the security rules work. Customize them to your usecase" /%}
-
-{% quick-link title="Xrpl Signed Request" icon="plugins" href="/" description="Extend the library with xrpl signed requests for secure storage." /%}
-
-{% quick-link title="API reference" icon="theming" href="/" description="Learn to easily customize and modify your dapp's storage to fit your needs." /%}
-
-{% /quick-links %}
-
 ---
 
 ## Quick start
