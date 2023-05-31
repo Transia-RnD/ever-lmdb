@@ -19,14 +19,11 @@ interface XrplLmdbEntry {
 
 export class DbService {
   #request: Request = null
-  #dbPath = ''
   #db: LMDBDatabase = null
   #rules: Rules = null
 
   constructor(request: Request) {
-    const fullpath = request.path.split('/')[1] as string
     this.#request = request
-    this.#dbPath = fullpath
     this.#db = new LMDBDatabase('one')
     this.#rules = JSON.parse(readFile(path.join(process.cwd(), 'rules.json')))
   }
@@ -118,8 +115,8 @@ export class DbService {
       const id = convertStringToHex(this.#request.path)
       await this.#db.delete(id)
       resObj.snapshot = { id: id }
-    } catch (error) {
-      resObj.error = `Error in deleting the ${this.#dbPath} ${error}`
+    } catch (error: any) {
+      resObj.error = error.message
     } finally {
       this.#db.close()
     }
