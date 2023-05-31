@@ -39,14 +39,6 @@ const hpc = new HotPocket.Contract();
 hpc.init(contract);
 ```
 
-{% callout type="warning" title="Create the `mydata` directory in the `dist` directory" %}
-For lmdb database to work we need to create an empty directory in the root of the `dist` directory.
-{% /callout %}
-
-{% callout title="Copy the `rules.sample.json` file to the `dist` directory" %}
-For lmdb database rules to work we must have a default `rules.json` file at the root of the dist directory.
-{% /callout %}
-
 ---
 
 ### Configuring the Client
@@ -71,7 +63,7 @@ var client = new ClientApp();
       Uint8ArrayToHex(client.userKeyPair.publicKey), 
       Uint8ArrayToHex(client.userKeyPair.privateKey).slice(0, 66)
     )
-    const sdk = new Sdk('one', everKp, client)
+    const sdk = new Sdk(everKp, client)
     // ...
   }
 }
@@ -124,8 +116,8 @@ const person = new CustomModel('Alice Smith', 30);
 await documentRef.set(person.encode());
 
 // You can also retrieve the data by calling `get` on the reference
-const snapshot = await documentRef.get();
-const decoded = decodeModel(snapshot.binary, CustomModel)
+const response = await documentRef.get();
+const decoded = decodeModel(response.snapshot.binary, CustomModel)
 console.log(decoded.name); // Output: "Alice Smith"
 ```
 
@@ -140,10 +132,10 @@ const collectionRef = sdk.collection('people');
 const documentRef = collectionRef.document('123');
 
 // Use the `get` function to retrieve the data
-const snapshot = await documentRef.get();
+const response = await documentRef.get();
 
 // Decode the binary data using your custom model
-const person = decodeModel(snapshot.binary, CustomModel);
+const person = decodeModel(response.snapshot.binary, CustomModel);
 
 // Use the data as needed
 console.log(person.name); // Output: "Alice Smith"
