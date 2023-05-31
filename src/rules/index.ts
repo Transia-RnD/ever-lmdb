@@ -104,7 +104,7 @@ export function parsePath(path: string, reqPath: string) {
     //   throw Error('bad match collection / document index')
     // }
 
-    if (pathMatch[3] === undefined && pathMatch[4] === undefined) {
+    if (reqMatch && pathMatch[3] === undefined && pathMatch[4] === undefined) {
       return {
         parentRuleName: pathMatch[1],
         parentReqName: reqMatch[1],
