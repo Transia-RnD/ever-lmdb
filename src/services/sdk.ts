@@ -2,6 +2,7 @@ import { convertStringToHex } from 'xrpl'
 import { prepareRequest } from './api'
 import { Request } from '../rules/types'
 import { BaseModel } from '../models'
+import { v4 as uuidv4 } from 'uuid'
 
 export class EverKeyPair {
   publicKey: string = null
@@ -47,10 +48,10 @@ export class DocumentReference {
   }
 
   async get() {
-    const path = `${this.col.path}/${this.col.doc.path}`
-    console.log(`GET: ${path}`)
+    const path = `/${this.col.path}/${this.col.doc.path}`
+    // console.log(`GET: ${path}`)
     const request = prepareRequest(
-      '1',
+      uuidv4(),
       this.col.sdk.database,
       'GET',
       path,
@@ -62,10 +63,10 @@ export class DocumentReference {
   }
 
   async set<T extends BaseModel>(model: T) {
-    const path = `${this.col.path}/${this.col.doc.path}`
-    console.log(`SET: ${path}`)
+    const path = `/${this.col.path}/${this.col.doc.path}`
+    // console.log(`SET: ${path}`)
     const request = prepareRequest(
-      '1',
+      uuidv4(),
       this.col.sdk.database,
       'POST',
       path,
@@ -78,10 +79,10 @@ export class DocumentReference {
   }
 
   async update<T extends BaseModel>(model: T) {
-    const path = `${this.col.path}/${this.col.doc.path}`
-    console.log(`UPDATE: ${path}`)
+    const path = `/${this.col.path}/${this.col.doc.path}`
+    // console.log(`UPDATE: ${path}`)
     const request = prepareRequest(
-      '1',
+      uuidv4(),
       this.col.sdk.database,
       'PUT',
       path,
@@ -94,10 +95,10 @@ export class DocumentReference {
   }
 
   async delete() {
-    const path = `${this.col.path}/${this.col.doc.path}`
-    console.log(`DELETE: ${path}`)
+    const path = `/${this.col.path}/${this.col.doc.path}`
+    // console.log(`DELETE: ${path}`)
     const request = prepareRequest(
-      '1',
+      uuidv4(),
       this.col.sdk.database,
       'DELETE',
       path,
