@@ -38,7 +38,7 @@ export class ApiService {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async handleRequest(user: User, request: Request, isReadOnly: boolean) {
-    console.log('HANDLE REQUEST')
+    // console.log('HANDLE REQUEST')
     let result
     this.#dbService = new DbService(request)
     if (request.method == 'POST') {

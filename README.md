@@ -52,7 +52,7 @@ const {
   EverKeyPair,
   MessageModel,
   decodeModel,
-  Uint8ArrayToHex
+  uint8ArrayToHex
 } = require('ever-lmdb-sdk')
 const { deriveAddress } = require('ripple-keypairs');
 
@@ -60,8 +60,8 @@ var client = new ClientApp();
   if (await client.init()) {
     
     const everKp = new EverKeyPair(
-      Uint8ArrayToHex(client.userKeyPair.publicKey), 
-      Uint8ArrayToHex(client.userKeyPair.privateKey).slice(0, 66)
+      uint8ArrayToHex(client.userKeyPair.publicKey), 
+      uint8ArrayToHex(client.userKeyPair.privateKey).slice(0, 66)
     )
     const sdk = new Sdk(everKp, client)
     // ...
@@ -107,13 +107,13 @@ Once you have defined your custom data model, you can use the Ever-lmdb-sdk to s
 // Construct a reference to the collection and document you want 
 // to store the data in
 const collectionRef = sdk.collection('people');
-const documentRef = collectionRef.document('123');
+const documentRef = collectionRef.document('123').convert(CustomModel);
 
 // Create a new instance of your custom model
 const person = new CustomModel('Alice Smith', 30);
 
 // Use the `set` function to store the data
-await documentRef.set(person.encode());
+await documentRef.set(person);
 
 // You can also retrieve the data by calling `get` on the reference
 const response = await documentRef.get();

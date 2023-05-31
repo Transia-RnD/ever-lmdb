@@ -42,7 +42,10 @@ describe('sdk test', () => {
       ),
       hpApp
     )
-    const ref = sdk.collection('Messages').document(address)
+    const ref = sdk
+      .collection('Messages')
+      .document(address)
+      .withConverter(MessageModel)
     const response = await ref.get()
     console.log(response)
   })

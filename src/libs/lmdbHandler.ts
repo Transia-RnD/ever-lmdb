@@ -19,7 +19,7 @@ export class LMDBDatabase {
     // If a connection is already open increase the connection count.
     // This guarantees only one connection is open even if open() is called before closing the previous connections.
     if (this.openConnections <= 0) {
-      console.log('OPEN')
+      // console.log('OPEN')
       // node-lmdb
       this.env = new Env()
       this.env.open({
@@ -27,13 +27,15 @@ export class LMDBDatabase {
         mapSize: 2 * 1024 * 1024 * 1024, // maximum database size
         maxDbs: 3,
       })
-      console.log(`OPENING COLLECTION: ${this.dbCollection}`)
+      // console.log(`OPENING COLLECTION: ${this.dbCollection}`)
       this.db = this.env.openDbi({
         name: this.dbCollection,
         create: true, // will create if database did not exist
       })
       this.openConnections = 1
-    } else console.log('OPEN - ELSE')
+    } else {
+      // console.log('OPEN - ELSE')
+    }
     this.openConnections++
   }
 
@@ -42,7 +44,7 @@ export class LMDBDatabase {
     // Otherwise keep decreasing until connection count is 1.
     // This prevents closing the connection even if close() is called while db is used by another open session.
     if (this.openConnections <= 1) {
-      console.log('CLOSE')
+      // console.log('CLOSE')
       if (this.db && this.env) {
         this.db.close()
         this.env.close()
@@ -50,7 +52,9 @@ export class LMDBDatabase {
         this.env = null
         this.openConnections = 0
       }
-    } else console.log('CLOSE - ELSE')
+    } else {
+      // console.log('CLOSE - ELSE')
+    }
     this.openConnections--
   }
 
@@ -59,7 +63,7 @@ export class LMDBDatabase {
     if (!this.db) throw 'Database connection is not open.'
 
     // node-lmdb
-    console.log('LMDB CREATE')
+    // console.log('LMDB CREATE')
     const txn = this.env.beginTxn()
     txn.putBinary(this.db, key, buffer)
     txn.commit()
@@ -71,7 +75,7 @@ export class LMDBDatabase {
     if (!this.db) throw 'Database connection is not open.'
 
     // node-lmdb
-    console.log('LMDB GET')
+    // console.log('LMDB GET')
     const txn = this.env.beginTxn()
     const data = txn.getBinary(this.db, key)
     txn.commit()
@@ -87,7 +91,7 @@ export class LMDBDatabase {
     if (!this.db) throw 'Database connection is not open.'
 
     // node-lmdb
-    console.log('LMDB UPDATE')
+    // console.log('LMDB UPDATE')
     const txn = this.env.beginTxn()
     txn.putBinary(this.db, key, buffer)
     txn.commit()
@@ -100,7 +104,7 @@ export class LMDBDatabase {
         type: 'error',
       }
     }
-    console.log('LMDB UPDATE')
+    // console.log('LMDB UPDATE')
     return true
   }
 
@@ -109,7 +113,7 @@ export class LMDBDatabase {
     if (!this.db) throw 'Database connection is not open.'
 
     // node-lmdb
-    console.log('LMDB DELETE')
+    // console.log('LMDB DELETE')
     const txn = this.env.beginTxn()
     txn.del(this.db, key)
     txn.commit()

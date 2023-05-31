@@ -55,9 +55,7 @@ describe('end to end', () => {
       publicKey: publicKey,
       inputs: inputs,
       send: function (response: any): void {
-        expect(response.id).toBe(
-          '2F4D657373616765732F72776F746F514A3950625164485852386D6175764B437A4370775543327768745059'
-        )
+        expect(response.id).toBe('1')
         return
       },
     }

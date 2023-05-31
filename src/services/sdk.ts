@@ -1,8 +1,9 @@
 import { convertStringToHex } from 'xrpl'
 import { prepareRequest } from './api'
 import { Request } from '../rules/types'
-import { BaseModel } from '../models'
+import { BaseModel, ModelClass } from '../models'
 import { v4 as uuidv4 } from 'uuid'
+import { decodeModel, generateKey } from '../util'
 
 export class EverKeyPair {
   publicKey: string = null
@@ -11,13 +12,6 @@ export class EverKeyPair {
   constructor(publicKey: string, privateKey: string) {
     this.publicKey = publicKey
     this.privateKey = privateKey
-  }
-
-  fromHPKP(publicKey: string, privateKey: string): EverKeyPair {
-    return new EverKeyPair(
-      publicKey.toUpperCase(),
-      privateKey.toUpperCase().slice(0, 66)
-    )
   }
 }
 
@@ -39,12 +33,35 @@ export class CollectionReference {
 }
 
 export class DocumentReference {
+  modelClass: any
   path: string = null
   col?: CollectionReference = null
 
-  constructor(path: string, col?: CollectionReference | null) {
-    this.path = path
+  constructor(path?: string, col?: CollectionReference | null) {
+    this.path = path ? path : generateKey(32)
     this.col = col
+  }
+
+  withConverter<T extends BaseModel>(
+    modelClass: ModelClass<T>
+  ): DocumentReference {
+    this.modelClass = modelClass
+    return this
+  }
+
+  async read(request: Request) {
+    try {
+      const inpString = JSON.stringify(request)
+      const client = await this.col.sdk.client.client
+      const response = await client.submitContractReadRequest(inpString)
+      if (this.modelClass) {
+        return decodeModel(response.snapshot.binary, this.modelClass)
+      }
+      return response
+    } catch (error) {
+      console.log(error)
+      throw error
+    }
   }
 
   async get() {
@@ -59,7 +76,7 @@ export class DocumentReference {
       this.col.sdk.keypair.publicKey,
       this.col.sdk.keypair.privateKey
     )
-    return await this.col.sdk.read(request)
+    return await this.read(request)
   }
 
   async set<T extends BaseModel>(model: T) {
@@ -152,16 +169,6 @@ export class Sdk {
           rejecter: rejecter,
         })
       })
-    } catch (error) {
-      console.log(error)
-      throw error
-    }
-  }
-
-  async read(request: Request) {
-    try {
-      const inpString = JSON.stringify(request)
-      return await this.client.client.submitContractReadRequest(inpString)
     } catch (error) {
       console.log(error)
       throw error

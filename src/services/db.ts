@@ -30,7 +30,7 @@ export class DbService {
 
   // Creates a db record
   async create() {
-    console.log('CREATE')
+    // console.log('DB CREATE')
     const resObj: Response = {}
     try {
       this.#db.open()
@@ -45,7 +45,8 @@ export class DbService {
         } as XrplLmdbEntry)
       )
       await this.#db.create(id, bytes)
-      resObj.id = id
+      resObj.id = this.#request.id
+      resObj.snapshot = { id: id }
     } catch (error: any) {
       resObj.error = error.message
     } finally {
@@ -56,7 +57,7 @@ export class DbService {
 
   // Gets a db record
   async get() {
-    console.log('GET')
+    // console.log('DB GET')
     const resObj: Response = {}
     try {
       this.#db.open()
@@ -80,7 +81,7 @@ export class DbService {
 
   // Update a db record
   async update() {
-    console.log('UPDATE')
+    // console.log('DB UPDATE')
     const resObj: Response = {}
     try {
       this.#db.open()
@@ -106,7 +107,7 @@ export class DbService {
 
   // Deletes a db record
   async delete() {
-    console.log('DELETE')
+    // console.log('DB DELETE')
     // console.log(id)
     const resObj: Response = {}
     try {

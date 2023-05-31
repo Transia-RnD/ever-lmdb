@@ -10,8 +10,8 @@ export function generateKey(length: number) {
   return result
 }
 
-export function HexToUint8Array(key: Buffer) {
-  return key
+export function uint8ArrayToHex(array: Uint8Array): string {
+  return array
     .reduce(
       (accumulator, value) => accumulator + value.toString(16).padStart(2, '0'),
       ''
@@ -19,7 +19,7 @@ export function HexToUint8Array(key: Buffer) {
     .toUpperCase()
 }
 
-export function Uint8ArrayToHex(hex: string): Uint8Array {
+export function hexToUint8Array(hex: string): Uint8Array {
   const result = new Uint8Array(hex.length / 2)
   for (let i = 0; i < hex.length; i += 2) {
     result[i / 2] = parseInt(hex.substr(i, 2), 16)
