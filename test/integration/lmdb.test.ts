@@ -1,13 +1,10 @@
-// import { Wallet, convertStringToHex } from 'xrpl'
-import { Wallet } from 'xrpl'
+import { Wallet, convertStringToHex } from 'xrpl'
 import fs from 'fs'
 import path from 'path'
 import { ApiService, prepareRequest } from '../../dist/npm/src/services/api'
-// import { Sdk } from '../../dist/npm/src/services/sdk'
 import { User } from '../../dist/npm/src/services/types'
 import { MessageModel } from '../../dist/npm/src/models'
-// import { decodeModel } from '../../dist/npm/src/util/decode'
-// import { MessageModel } from '../fixtures/models'
+import { decodeModel } from '../../dist/npm/src/util/decode'
 
 export function readFile(filename: string): string {
   const jsonString = fs.readFileSync(
@@ -16,14 +13,14 @@ export function readFile(filename: string): string {
   return jsonString.toString()
 }
 
-// function lmdbConverter(collectionName: string, binary: string) {
-//   switch (collectionName) {
-//     case 'Messages':
-//       return decodeModel(binary, MessageModel)
-//     default:
-//       break
-//   }
-// }
+function lmdbConverter(collectionName: string, binary: string) {
+  switch (collectionName) {
+    case 'Messages':
+      return decodeModel(binary, MessageModel)
+    default:
+      break
+  }
+}
 
 export async function setupClient(): Promise<XrplIntegrationTestContext> {
   const config = JSON.parse(readFile('../fixtures/config.json'))
@@ -91,8 +88,6 @@ describe('end to end', () => {
   })
 
   test('lmdb - post', async () => {
-    console.log(testContext)
-
     const model = new MessageModel(
       BigInt(1685216402734),
       'LWslHQUc7liAGYUryIhoRNPDbWucJZjj',
@@ -101,17 +96,45 @@ describe('end to end', () => {
     const path = `/Messages/${testContext.alice.classicAddress}`
     const publicKey = testContext.alice.publicKey
     const privateKey = testContext.alice.privateKey
-    const binary = model.encode()
     const request = prepareRequest(
       '1',
       'one',
       'POST',
       path,
+      model.encode(),
+      publicKey,
+      privateKey,
+      model.getMetadata()
+    )
+    const api = new ApiService()
+    const isReadOnly = true
+    const inputs = [Buffer.from(JSON.stringify(request))]
+    const user: User = {
+      publicKey: publicKey,
+      inputs: inputs,
+      send: function (response: any): void {
+        expect(response.id).toBe(
+          '2F4D657373616765732F72776F746F514A3950625164485852386D6175764B437A4370775543327768745059'
+        )
+        return
+      },
+    }
+    await api.handleRequest(user, request, isReadOnly)
+  })
+  test('lmdb get - failure', async () => {
+    const path = `/Messages/${testContext.alice.classicAddress}`
+    const publicKey = testContext.bob.publicKey
+    const privateKey = testContext.bob.privateKey
+    const binary = convertStringToHex(path)
+    const request = prepareRequest(
+      '1',
+      'one',
+      'GET',
+      path,
       binary,
       publicKey,
       privateKey
     )
-
     const api = new ApiService()
     const isReadOnly = true
     const inputs = [Buffer.from(JSON.stringify(request))]
@@ -120,73 +143,47 @@ describe('end to end', () => {
       inputs: inputs,
       send: function (response: any): void {
         console.log(response)
+
+        expect(response.error).toBe('Invalid Permissions: Invalid Id')
+        return
       },
     }
     await api.handleRequest(user, request, isReadOnly)
   })
-  // test('lmdb get - failure', async () => {
-  //   const path = `/Messages/${testContext.alice.classicAddress}`
-  //   const publicKey = testContext.bob.publicKey
-  //   const privateKey = testContext.bob.privateKey
-  //   const binary = convertStringToHex(path)
-  //   const request = prepareRequest(
-  //     '1',
-  //     'one',
-  //     'GET',
-  //     path,
-  //     binary,
-  //     publicKey,
-  //     privateKey
-  //   )
-  //   const api = new ApiService()
-  //   const isReadOnly = true
-  //   const inputs = [Buffer.from(JSON.stringify(request))]
-  //   const user: User = {
-  //     publicKey: publicKey,
-  //     inputs: inputs,
-  //     send: function (response: any): void {
-  //       console.log(response)
-  //       if (response.error) {
-  //         expect(response.error).toBe('Invalid Permissions: Invalid Id')
-  //         return
-  //       }
-  //     },
-  //   }
-  //   await api.handleRequest(user, request, isReadOnly)
-  // })
-  // test('lmdb get - success', async () => {
-  //   const path = `/Messages/${testContext.alice.classicAddress}`
-  //   const publicKey = testContext.alice.publicKey
-  //   const privateKey = testContext.alice.privateKey
-  //   const binary = convertStringToHex(path)
-  //   const request = prepareRequest(
-  //     '1',
-  //     'one',
-  //     'GET',
-  //     path,
-  //     binary,
-  //     publicKey,
-  //     privateKey
-  //   )
-  //   const api = new ApiService()
-  //   const isReadOnly = true
-  //   const inputs = [Buffer.from(JSON.stringify(request))]
-  //   const user: User = {
-  //     publicKey: publicKey,
-  //     inputs: inputs,
-  //     send: function (response: any): void {
-  //       console.log(response)
-  //       const decodedMessage = lmdbConverter(
-  //         'Messages',
-  //         response.snapshot.binary
-  //       ) as MessageModel
-  //       expect(decodedMessage.updatedTime).toBe(1685216402734n)
-  //       expect(decodedMessage.updatedBy).toBe(
-  //         'LWslHQUc7liAGYUryIhoRNPDbWucJZjj'
-  //       )
-  //       expect(decodedMessage.message).toBe('This is a message')
-  //     },
-  //   }
-  //   await api.handleRequest(user, request, isReadOnly)
-  // })
+  test('lmdb get - success', async () => {
+    const path = `/Messages/${testContext.alice.classicAddress}`
+    const publicKey = testContext.alice.publicKey
+    const privateKey = testContext.alice.privateKey
+    const binary = convertStringToHex(path)
+    const request = prepareRequest(
+      '1',
+      'one',
+      'GET',
+      path,
+      binary,
+      publicKey,
+      privateKey
+    )
+    const api = new ApiService()
+    const isReadOnly = true
+    const inputs = [Buffer.from(JSON.stringify(request))]
+    const user: User = {
+      publicKey: publicKey,
+      inputs: inputs,
+      send: function (response: any): void {
+        console.log(response)
+        const decodedMessage = lmdbConverter(
+          'Messages',
+          response.snapshot.binary
+        ) as MessageModel
+        expect(decodedMessage.updatedTime).toBe(1685216402734n)
+        expect(decodedMessage.updatedBy).toBe(
+          'LWslHQUc7liAGYUryIhoRNPDbWucJZjj'
+        )
+        expect(decodedMessage.message).toBe('This is a message')
+        return
+      },
+    }
+    await api.handleRequest(user, request, isReadOnly)
+  })
 })

@@ -1,40 +1,7 @@
 import { convertStringToHex } from 'xrpl'
 import { prepareRequest } from './api'
 import { Request } from '../rules/types'
-// import { Request, Response } from '../rules/types'
-// import { DbService } from './db'
-// import { User } from './types'
-
-// function getPath(root: CollectionReference) {
-//   console.log(root)
-//   console.log(root.path)
-
-//   let path = ''
-//   // Layer 1
-//   if (root !== null) {
-//     path += root.path
-//   }
-//   if (root.doc !== null) {
-//     path += root.doc.path
-//   }
-//   // // Layer 2
-//   // if (this.collection.doc.col) {
-//   //   path += this.collection.doc.col.path
-//   // }
-//   // if (this.collection.doc.col.doc) {
-//   //   path += this.collection.doc.col.doc.path
-//   // }
-//   // // Layer 3
-//   // if (this.collection.doc.col.doc.col) {
-//   //   path += this.collection.doc.col.doc.col.path
-//   // }
-//   // if (this.collection.doc.col.doc.col.doc) {
-//   //   path += this.collection.doc.col.doc.col.doc.path
-//   // }
-//   console.log(path)
-
-//   return path
-// }
+import { BaseModel } from '../models'
 
 export class EverKeyPair {
   publicKey: string = null
@@ -82,7 +49,6 @@ export class DocumentReference {
   async get() {
     const path = `${this.col.path}/${this.col.doc.path}`
     console.log(`GET: ${path}`)
-    // console.log(convertStringToHex(path))
     const request = prepareRequest(
       '1',
       this.col.sdk.database,
@@ -95,34 +61,34 @@ export class DocumentReference {
     return await this.col.sdk.read(request)
   }
 
-  async set(binary: string) {
+  async set<T extends BaseModel>(model: T) {
     const path = `${this.col.path}/${this.col.doc.path}`
-    // console.log(`SET: ${path}`)
-    // console.log(binary)
+    console.log(`SET: ${path}`)
     const request = prepareRequest(
       '1',
       this.col.sdk.database,
       'POST',
       path,
-      binary,
+      model.encode(),
       this.col.sdk.keypair.publicKey,
-      this.col.sdk.keypair.privateKey
+      this.col.sdk.keypair.privateKey,
+      model.getMetadata()
     )
     await this.col.sdk.submit(request)
   }
 
-  async update(binary: string) {
+  async update<T extends BaseModel>(model: T) {
     const path = `${this.col.path}/${this.col.doc.path}`
     console.log(`UPDATE: ${path}`)
-    // console.log(binary)
     const request = prepareRequest(
       '1',
       this.col.sdk.database,
       'PUT',
       path,
-      binary,
+      model.encode(),
       this.col.sdk.keypair.publicKey,
-      this.col.sdk.keypair.privateKey
+      this.col.sdk.keypair.privateKey,
+      model.getMetadata()
     )
     await this.col.sdk.submit(request)
   }
@@ -130,7 +96,6 @@ export class DocumentReference {
   async delete() {
     const path = `${this.col.path}/${this.col.doc.path}`
     console.log(`DELETE: ${path}`)
-    // console.log(convertStringToHex(path))
     const request = prepareRequest(
       '1',
       this.col.sdk.database,
@@ -154,8 +119,8 @@ export class Sdk {
   database: string = null
   promiseMap = new Map()
 
-  constructor(database: string, keypair: EverKeyPair, client: any) {
-    this.database = database
+  constructor(keypair: EverKeyPair, client: any, database?: string) {
+    this.database = database ?? 'one'
     this.keypair = keypair
     this.client = client
   }
@@ -171,9 +136,10 @@ export class Sdk {
       this.client.client.submitContractInput(inpString).then((input: any) => {
         input.submissionStatus.then((s: any) => {
           if (s.status !== 'accepted') {
-            console.log(`Ledger_Rejection: ${s.reason}`)
+            // console.log(`Ledger_Rejection: ${s.reason}`)
             throw `Ledger_Rejection: ${s.reason}`
           }
+          // console.log(`Ledger_Success`)
         })
       })
 

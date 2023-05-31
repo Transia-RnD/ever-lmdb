@@ -1,87 +1,78 @@
-import { validateRequestAgainstRules } from '../rules'
+import { validateRequestAgainstRules, validateXrplAuth } from '../rules'
 import { LMDBDatabase } from '../libs/lmdbHandler'
 import { Request, Response, Rules } from '../rules/types'
 import fs from 'fs'
 import path from 'path'
+import { convertStringToHex, deriveAddress } from 'xrpl'
 
 function readFile(filename: string): string {
   const jsonString = fs.readFileSync(path.resolve(__dirname, `${filename}`))
   return jsonString.toString()
 }
 
+interface XrplLmdbEntry {
+  binary: string
+  metadata: Record<string, any>
+  sig: string
+  pk: string
+}
+
 export class DbService {
   #request: Request = null
   #dbPath = ''
   #db: LMDBDatabase = null
+  #rules: Rules = null
 
   constructor(request: Request) {
-    const path = request.path.split('/')[1]
+    const fullpath = request.path.split('/')[1] as string
     this.#request = request
-    this.#dbPath = path
-    this.#db = new LMDBDatabase(this.#dbPath)
+    this.#dbPath = fullpath
+    this.#db = new LMDBDatabase('one')
+    this.#rules = JSON.parse(readFile(path.join(process.cwd(), 'rules.json')))
   }
 
-  // Creates a db record when a payload is sent
-  async create(id: string, data: Record<string, any>) {
-    console.log('CREATE DATA')
-    // console.log(id)
-    // console.log(data)
+  // Creates a db record
+  async create() {
+    console.log('CREATE')
     const resObj: Response = {}
     try {
       this.#db.open()
-      const rules: Rules = JSON.parse(
-        readFile(path.join(process.cwd(), 'rules.json'))
+      validateRequestAgainstRules(this.#request, this.#rules)
+      const id = convertStringToHex(this.#request.path)
+      const bytes = Buffer.from(
+        JSON.stringify({
+          binary: this.#request.binary,
+          metadata: this.#request.metadata,
+          sig: this.#request.auth.signature,
+          pk: this.#request.auth.pk,
+        } as XrplLmdbEntry)
       )
-      validateRequestAgainstRules(this.#request, rules)
-      await this.#db.create(id, JSON.stringify({ ...data }))
-      resObj.snapshot = { id: id }
-    } catch (error) {
-      console.log('ERROR')
-
-      resObj.error = `Error in creating the ${this.#dbPath} ${error}`
-    } finally {
-      this.#db.close()
-    }
-    // console.log(resObj);
-    return resObj
-  }
-
-  // Creates a db record when a binary is sent
-  async create_binary(id: string, binary: string) {
-    console.log('CREATE BINARY')
-    // console.log(id)
-    // console.log(binary)
-    const resObj: Response = {}
-    try {
-      this.#db.open()
-      const rules: Rules = JSON.parse(
-        readFile(path.join(process.cwd(), 'rules.json'))
-      )
-      validateRequestAgainstRules(this.#request, rules)
-      await this.#db.create(id, binary)
-      resObj.snapshot = { id: id }
+      await this.#db.create(id, bytes)
+      resObj.id = id
     } catch (error: any) {
       resObj.error = error.message
     } finally {
       this.#db.close()
     }
-    // console.log(resObj);
     return resObj
   }
 
-  // Gets a db record for a payload key
-  async get(id: string) {
+  // Gets a db record
+  async get() {
     console.log('GET')
-    // console.log(id)
     const resObj: Response = {}
     try {
       this.#db.open()
-      const rules: Rules = JSON.parse(
-        readFile(path.join(process.cwd(), 'rules.json'))
-      )
-      validateRequestAgainstRules(this.#request, rules)
+      validateRequestAgainstRules(this.#request, this.#rules)
+      const id = convertStringToHex(this.#request.path)
       const result = await this.#db.get(id)
-      resObj.snapshot = { binary: result }
+      resObj.snapshot = { ...JSON.parse(result) }
+      validateXrplAuth(
+        resObj.snapshot.binary,
+        resObj.snapshot.sig,
+        resObj.snapshot.pk,
+        deriveAddress(resObj.snapshot.pk)
+      )
     } catch (error: any) {
       resObj.error = error.message
     } finally {
@@ -90,21 +81,24 @@ export class DbService {
     return resObj
   }
 
-  // Update a db record for a payload key
-  async update(id: string, data: Record<string, any>) {
+  // Update a db record
+  async update() {
     console.log('UPDATE')
-    // console.log(id)
-    // console.log(data)
-
     const resObj: Response = {}
     try {
       this.#db.open()
-      const rules: Rules = JSON.parse(
-        readFile(path.join(process.cwd(), 'rules.json'))
+      validateRequestAgainstRules(this.#request, this.#rules)
+      const id = convertStringToHex(this.#request.path)
+      const bytes = Buffer.from(
+        JSON.stringify({
+          binary: this.#request.binary,
+          metadata: this.#request.metadata,
+          sig: this.#request.auth.signature,
+          pk: this.#request.auth.pk,
+        } as XrplLmdbEntry)
       )
-      validateRequestAgainstRules(this.#request, rules)
-      const result = await this.#db.update(id, JSON.stringify({ ...data }))
-      resObj.snapshot = { data: result }
+      await this.#db.update(id, bytes)
+      resObj.id = id
     } catch (error: any) {
       resObj.error = error.message
     } finally {
@@ -113,43 +107,17 @@ export class DbService {
     return resObj
   }
 
-  // Update a db record for a payload key
-  async update_binary(id: string, binary: string) {
-    console.log('UPDATE')
-    // console.log(id)
-    // console.log(binary)
-
-    const resObj: Response = {}
-    try {
-      this.#db.open()
-      const rules: Rules = JSON.parse(
-        readFile(path.join(process.cwd(), 'rules.json'))
-      )
-      validateRequestAgainstRules(this.#request, rules)
-      const result = await this.#db.update(id, binary)
-      resObj.snapshot = { data: result }
-    } catch (error: any) {
-      resObj.error = error.message
-    } finally {
-      this.#db.close()
-    }
-    return resObj
-  }
-
-  // Deletes a db record for a payload key
-  async delete(id: string) {
+  // Deletes a db record
+  async delete() {
     console.log('DELETE')
     // console.log(id)
     const resObj: Response = {}
     try {
       this.#db.open()
-      const rules: Rules = JSON.parse(
-        readFile(path.join(process.cwd(), 'rules.json'))
-      )
-      validateRequestAgainstRules(this.#request, rules)
-      const result = await this.#db.delete(id)
-      console.log(result)
-      resObj.snapshot = { data: null }
+      validateRequestAgainstRules(this.#request, this.#rules)
+      const id = convertStringToHex(this.#request.path)
+      await this.#db.delete(id)
+      resObj.snapshot = { id: id }
     } catch (error) {
       resObj.error = `Error in deleting the ${this.#dbPath} ${error}`
     } finally {

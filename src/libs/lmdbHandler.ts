@@ -54,14 +54,14 @@ export class LMDBDatabase {
     this.openConnections--
   }
 
-  create(key: string, binary: string) {
+  create(key: string, buffer: Buffer) {
     if (!this.env) throw 'Env connection is not open.'
     if (!this.db) throw 'Database connection is not open.'
 
     // node-lmdb
     console.log('LMDB CREATE')
     const txn = this.env.beginTxn()
-    txn.putBinary(this.db, key, Buffer.from(binary))
+    txn.putBinary(this.db, key, buffer)
     txn.commit()
     return key
   }
@@ -82,17 +82,17 @@ export class LMDBDatabase {
     return data.toString()
   }
 
-  async update(key: string, binary: string) {
+  async update(key: string, buffer: Buffer) {
     if (!this.env) throw 'Env connection is not open.'
     if (!this.db) throw 'Database connection is not open.'
 
     // node-lmdb
     console.log('LMDB UPDATE')
     const txn = this.env.beginTxn()
-    txn.putBinary(this.db, key, Buffer.from(binary))
+    txn.putBinary(this.db, key, buffer)
     txn.commit()
 
-    if (!binary) {
+    if (!buffer) {
       // throw Error('No Data');
       return {
         error: 'No Data',

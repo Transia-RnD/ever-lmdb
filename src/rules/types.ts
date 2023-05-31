@@ -6,11 +6,11 @@ export interface Auth {
 
 export interface Request {
   id: string // of request not id of object
-  type: string // 
+  type: string //
   database: string // "one"
   method: string
   path: string
-  data?: Record<string, any>
+  metadata?: Record<string, any>
   binary?: string | null // signed data(write) or path(read)
   auth?: Auth
 }

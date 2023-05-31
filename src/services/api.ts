@@ -11,7 +11,8 @@ export function prepareRequest(
   path: string,
   binary: string,
   publicKey: string,
-  privateKey: string
+  privateKey: string,
+  metadata?: Record<string, any>
 ) {
   return {
     id: id,
@@ -19,6 +20,7 @@ export function prepareRequest(
     database: database,
     method: method,
     path: path,
+    metadata: metadata,
     binary: binary,
     auth: {
       uid: deriveAddress(publicKey),
@@ -31,33 +33,26 @@ export function prepareRequest(
 export class ApiService {
   #dbService: DbService = null
 
-  constructor() {
-    console.log('CONSTRUCTOR')
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  constructor() {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async handleRequest(user: User, request: Request, isReadOnly: boolean) {
     console.log('HANDLE REQUEST')
-    // console.log(request)
-    // console.log(request.binary)
     let result
-    // const collection = request.path.split('/')[1]
     this.#dbService = new DbService(request)
-    const id = request.path.split('/').pop()
     if (request.method == 'POST') {
-      result = await this.#dbService.create_binary(id, request.binary)
+      result = await this.#dbService.create()
     }
     if (request.method == 'PUT') {
-      result = await this.#dbService.update_binary(id, request.binary)
+      result = await this.#dbService.update()
     }
     if (request.method == 'DELETE') {
-      result = await this.#dbService.delete(id)
+      result = await this.#dbService.delete()
     }
     if (request.method == 'GET') {
-      result = await this.#dbService.get(id)
+      result = await this.#dbService.get()
     }
-
-    // console.log(result)
 
     if (isReadOnly) {
       await this.sendOutput(user, result)
