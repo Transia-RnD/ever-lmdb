@@ -1,12 +1,9 @@
 import { validateRequestAgainstRules } from '../../dist/npm/src/rules'
 import { Request, Rules } from '../../dist/npm/src/rules/types'
 import { MessageModel } from '../../dist/npm/src/models'
-import {
-  XrplIntegrationTestContext,
-  setupClient,
-} from '../integration/lmdb.test'
 import { convertHexToString } from 'xrpl'
 import { prepareRequest } from '../../dist/npm/src/services/api'
+import { EvernodeTestContext, setupClient } from '../integration/util'
 
 describe('rules - no permissions', () => {
   test('read failure - read|false write|false', () => {
@@ -609,7 +606,7 @@ describe('rules - write | auth.uid', () => {
 })
 
 describe('rules khan xrpl binary', () => {
-  let testContext: XrplIntegrationTestContext
+  let testContext: EvernodeTestContext
   beforeAll(async () => {
     testContext = await setupClient()
   })

@@ -1,10 +1,11 @@
-import { Wallet, convertStringToHex } from 'xrpl'
+import { convertStringToHex } from 'xrpl'
 import fs from 'fs'
 import path from 'path'
 import { ApiService, prepareRequest } from '../../dist/npm/src/services/api'
 import { User } from '../../dist/npm/src/services/types'
 import { MessageModel } from '../../dist/npm/src/models'
 import { decodeModel } from '../../dist/npm/src/util/decode'
+import { EvernodeTestContext, setupClient } from './util'
 
 export function readFile(filename: string): string {
   const jsonString = fs.readFileSync(
@@ -22,67 +23,8 @@ function lmdbConverter(collectionName: string, binary: string) {
   }
 }
 
-export async function setupClient(): Promise<XrplIntegrationTestContext> {
-  const config = JSON.parse(readFile('../fixtures/config.json'))
-  const currency = 'USD'
-
-  const context: XrplIntegrationTestContext = {
-    notactive: Wallet.fromSeed(config.notactive.seed),
-    master: Wallet.fromSeed(config.master.seed),
-    gw: Wallet.fromSeed(config.gw.seed),
-    ic: IC.gw(currency, Wallet.fromSeed(config.gw.seed).classicAddress),
-    alice: Wallet.fromSeed(config.alice.seed),
-    bob: Wallet.fromSeed(config.bob.seed),
-    carol: Wallet.fromSeed(config.carol.seed),
-  }
-  return context
-}
-
-export interface XrplIntegrationTestContext {
-  notactive: Wallet
-  master: Wallet
-  gw: Wallet
-  ic: IC
-  alice: Wallet
-  bob: Wallet
-  carol: Wallet
-}
-
-export class IC {
-  issuer: string | undefined
-  currency: string | undefined
-  value: number | undefined
-  amount: Record<string, string | number> | undefined
-
-  static gw(name: string, gw: string): IC {
-    // TODO: symbolToHex(name);
-    return new IC(gw, name, 0)
-  }
-
-  constructor(issuer: string, currency: string, value: number) {
-    this.issuer = issuer
-    this.currency = currency
-    this.value = value
-    this.amount = {
-      issuer: this.issuer,
-      currency: this.currency,
-      value: String(this.value),
-    }
-  }
-
-  set(value: number): IC {
-    this.value = value
-    this.amount = {
-      issuer: this.issuer as string,
-      currency: this.currency as string,
-      value: String(this.value),
-    }
-    return this
-  }
-}
-
 describe('end to end', () => {
-  let testContext: XrplIntegrationTestContext
+  let testContext: EvernodeTestContext
   beforeAll(async () => {
     testContext = await setupClient()
   })
