@@ -65,12 +65,14 @@ export class DbService {
       const id = convertStringToHex(this.#request.path)
       const result = await this.#db.get(id)
       resObj.snapshot = { ...JSON.parse(result) }
-      validateXrplAuth(
-        resObj.snapshot.binary,
-        resObj.snapshot.sig,
-        resObj.snapshot.pk,
-        deriveAddress(resObj.snapshot.pk)
-      )
+      if (resObj.snapshot) {
+        validateXrplAuth(
+          resObj.snapshot.binary,
+          resObj.snapshot.sig,
+          resObj.snapshot.pk,
+          deriveAddress(resObj.snapshot.pk)
+        )
+      }
     } catch (error: any) {
       resObj.error = error.message
     } finally {

@@ -18,6 +18,9 @@ export function validateXrplAuth(
   pk: string,
   uid: string
 ): void {
+  if (!binary || !signature || !pk) {
+    throw Error('Invalid Xrpl Validation')
+  }
   // console.log('VALIDATE XRPL DATA')
   if (verify(binary, signature, pk) && deriveAddress(pk) === uid) {
     // console.log('XRPL DATA VALIDATED')
@@ -90,7 +93,8 @@ export function parsePath(path: string, reqPath: string) {
   const pathMatch = path.match(pattern)
   if (pathMatch) {
     if (!pathMatch[1] || !pathMatch[2]) {
-      throw Error('invalid collection / document index')
+      console.log('invalid collection / document index')
+      return {} as PathMatch
     }
     const reqPattern =
       /^\/([A-Za-z0-9]+)\/([A-Za-z0-9]+)\/?([A-Za-z0-9]+)?\/?([A-Za-z0-9]+)?/
