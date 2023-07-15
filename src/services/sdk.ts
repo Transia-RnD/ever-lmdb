@@ -72,11 +72,29 @@ export class DocumentReference {
     }
   }
 
+  async custom<T extends BaseModel>(method: string, model: T) {
+    const path = `/${this.col.path}/${this.col.doc.path}`
+    // console.log(`CUSTOM: ${path}`)
+    const request = prepareRequest(
+      uuidv4(),
+      'custom',
+      this.col.sdk.database,
+      method,
+      path,
+      model.encode(),
+      this.col.sdk.keypair.publicKey,
+      this.col.sdk.keypair.privateKey,
+      model.getMetadata()
+    )
+    await this.col.sdk.submit(request)
+  }
+
   async get() {
     const path = `/${this.col.path}/${this.col.doc.path}`
     // console.log(`GET: ${path}`)
     const request = prepareRequest(
       uuidv4(),
+      'cloud.lmdb',
       this.col.sdk.database,
       'GET',
       path,
@@ -92,6 +110,7 @@ export class DocumentReference {
     // console.log(`SET: ${path}`)
     const request = prepareRequest(
       uuidv4(),
+      'cloud.lmdb',
       this.col.sdk.database,
       'POST',
       path,
@@ -108,6 +127,7 @@ export class DocumentReference {
     // console.log(`UPDATE: ${path}`)
     const request = prepareRequest(
       uuidv4(),
+      'cloud.lmdb',
       this.col.sdk.database,
       'PUT',
       path,
@@ -124,6 +144,7 @@ export class DocumentReference {
     // console.log(`DELETE: ${path}`)
     const request = prepareRequest(
       uuidv4(),
+      'cloud.lmdb',
       this.col.sdk.database,
       'DELETE',
       path,

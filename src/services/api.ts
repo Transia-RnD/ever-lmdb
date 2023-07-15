@@ -6,6 +6,7 @@ import { sign } from '@transia/ripple-keypairs/dist'
 
 export function prepareRequest(
   id: string,
+  type: string,
   database: string,
   method: string,
   path: string,
@@ -16,7 +17,7 @@ export function prepareRequest(
 ) {
   return {
     id: id,
-    type: 'cloud.lmdb',
+    type: type,
     database: database,
     method: method,
     path: path,
