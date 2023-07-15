@@ -1,8 +1,8 @@
-import { deriveAddress } from 'xrpl'
+import { deriveAddress } from '@transia/xrpl'
 import { Request, Response } from '../rules/types'
 import { DbService } from './db'
 import { User } from './types'
-import { sign } from 'ripple-keypairs/dist'
+import { sign } from '@transia/ripple-keypairs/dist'
 
 export function prepareRequest(
   id: string,
@@ -16,7 +16,7 @@ export function prepareRequest(
 ) {
   return {
     id: id,
-    type: 'type',
+    type: 'cloud.lmdb',
     database: database,
     method: method,
     path: path,
@@ -38,9 +38,15 @@ export class ApiService {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async handleRequest(user: User, request: Request, isReadOnly: boolean) {
-    // console.log('HANDLE REQUEST')
+    console.log(`HANDLE REQUEST: ${request.method}`)
     let result
-    this.#dbService = new DbService(request)
+
+    try {
+      this.#dbService = new DbService(request)
+      this.#dbService.loadrules()
+    } catch (error: any) {
+      await user.send({ id: request.id, error: error.message } as Response)
+    }
     if (request.method == 'POST') {
       result = await this.#dbService.create()
     }

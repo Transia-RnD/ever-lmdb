@@ -1,9 +1,13 @@
-import { convertStringToHex } from 'xrpl'
+import { convertStringToHex } from '@transia/xrpl'
 import { prepareRequest } from './api'
 import { Request } from '../rules/types'
-import { BaseModel, ModelClass } from '../models'
+import {
+  BaseModel,
+  ModelClass,
+  decodeModel,
+} from '@transia/hooks-toolkit/dist/npm/src/libs/binary-models'
 import { v4 as uuidv4 } from 'uuid'
-import { decodeModel, generateKey } from '../util'
+import { generateKey } from '../utils'
 
 export class EverKeyPair {
   publicKey: string = null
@@ -26,7 +30,7 @@ export class CollectionReference {
     this.sdk = sdk
   }
 
-  document(path: string) {
+  document(path?: string) {
     this.doc = new DocumentReference(path, this)
     return this.doc
   }
@@ -49,17 +53,21 @@ export class DocumentReference {
     return this
   }
 
-  async read(request: Request) {
+  async read(request: Request): Promise<BaseModel> {
     try {
       const inpString = JSON.stringify(request)
       const client = await this.col.sdk.client.client
       const response = await client.submitContractReadRequest(inpString)
-      if (this.modelClass) {
+
+      if (response.error) {
+        throw Error(response.error)
+      }
+
+      if (this.modelClass && response.snapshot && response.snapshot.binary) {
         return decodeModel(response.snapshot.binary, this.modelClass)
       }
       return response
     } catch (error) {
-      console.log(error)
       throw error
     }
   }

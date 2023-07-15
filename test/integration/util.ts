@@ -1,4 +1,4 @@
-import { Wallet } from 'xrpl'
+import { Wallet } from '@transia/xrpl'
 import fs from 'fs'
 import path from 'path'
 

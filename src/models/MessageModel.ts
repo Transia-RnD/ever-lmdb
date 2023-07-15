@@ -1,5 +1,9 @@
-import { BaseModel, Metadata } from './BaseModel'
-import { UInt64, VarString } from '../util/types'
+import {
+  BaseModel,
+  Metadata,
+  UInt64,
+  VarString,
+} from '@transia/hooks-toolkit/dist/npm/src/libs/binary-models'
 
 export class MessageModel extends BaseModel {
   updatedTime: UInt64
@@ -16,7 +20,7 @@ export class MessageModel extends BaseModel {
   getMetadata(): Metadata {
     return [
       { field: 'updatedTime', type: 'uint64' },
-      { field: 'updatedBy', type: 'varString', maxStringLength: 32 },
+      { field: 'updatedBy', type: 'varString', maxStringLength: 34 },
       { field: 'message', type: 'varString', maxStringLength: 250 },
     ]
   }

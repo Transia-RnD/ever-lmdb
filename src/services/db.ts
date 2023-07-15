@@ -3,7 +3,7 @@ import { LMDBDatabase } from '../libs/lmdbHandler'
 import { Request, Response, Rules } from '../rules/types'
 import fs from 'fs'
 import path from 'path'
-import { convertStringToHex, deriveAddress } from 'xrpl'
+import { convertStringToHex, deriveAddress } from '@transia/xrpl'
 
 function readFile(filename: string): string {
   const jsonString = fs.readFileSync(path.resolve(__dirname, `${filename}`))
@@ -25,16 +25,23 @@ export class DbService {
   constructor(request: Request) {
     this.#request = request
     this.#db = new LMDBDatabase('one')
-    this.#rules = JSON.parse(readFile(path.join(process.cwd(), 'rules.json')))
+  }
+
+  loadrules(): void {
+    try {
+      this.#rules = JSON.parse(readFile(path.join(process.cwd(), 'rules.json')))
+    } catch (error: any) {
+      console.log(error.message)
+      throw error
+    }
   }
 
   // Creates a db record
-  async create() {
-    // console.log('DB CREATE')
+  async create(): Promise<Response> {
     const resObj: Response = {}
     try {
       this.#db.open()
-      validateRequestAgainstRules(this.#request, this.#rules)
+      await validateRequestAgainstRules(this.#request, this.#rules, this.#db)
       const id = convertStringToHex(this.#request.path)
       const bytes = Buffer.from(
         JSON.stringify({
@@ -56,12 +63,12 @@ export class DbService {
   }
 
   // Gets a db record
-  async get() {
+  async get(): Promise<Response> {
     // console.log('DB GET')
     const resObj: Response = {}
     try {
       this.#db.open()
-      validateRequestAgainstRules(this.#request, this.#rules)
+      await validateRequestAgainstRules(this.#request, this.#rules, this.#db)
       const id = convertStringToHex(this.#request.path)
       const result = await this.#db.get(id)
       resObj.snapshot = { ...JSON.parse(result) }
@@ -82,12 +89,12 @@ export class DbService {
   }
 
   // Update a db record
-  async update() {
+  async update(): Promise<Response> {
     // console.log('DB UPDATE')
     const resObj: Response = {}
     try {
       this.#db.open()
-      validateRequestAgainstRules(this.#request, this.#rules)
+      await validateRequestAgainstRules(this.#request, this.#rules, this.#db)
       const id = convertStringToHex(this.#request.path)
       const bytes = Buffer.from(
         JSON.stringify({
@@ -108,13 +115,13 @@ export class DbService {
   }
 
   // Deletes a db record
-  async delete() {
+  async delete(): Promise<Response> {
     // console.log('DB DELETE')
     // console.log(id)
     const resObj: Response = {}
     try {
       this.#db.open()
-      validateRequestAgainstRules(this.#request, this.#rules)
+      await validateRequestAgainstRules(this.#request, this.#rules, this.#db)
       const id = convertStringToHex(this.#request.path)
       await this.#db.delete(id)
       resObj.snapshot = { id: id }

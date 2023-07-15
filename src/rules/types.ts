@@ -6,7 +6,7 @@ export interface Auth {
 
 export interface Request {
   id: string // of request not id of object
-  type: string //
+  type: string // db | custom (functions)
   database: string // "one"
   method: string
   path: string
@@ -29,6 +29,9 @@ export interface Rules {
 
 export interface Rule {
   read: boolean | string
-  write: boolean | string
+  create?: boolean | string
+  update?: boolean | string
+  delete?: boolean | string
+  write?: boolean | string
   [key: string]: any
 }

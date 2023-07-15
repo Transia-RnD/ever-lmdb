@@ -7,7 +7,7 @@ export function generateKey(length: number) {
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength))
   }
-  return result
+  return result.trim()
 }
 
 export function uint8ArrayToHex(array: Uint8Array): string {

@@ -1,4 +1,19 @@
-// import HotPocket from 'hotpocket-js-client'
+import { ApiService } from '../../dist/npm/src/services/api'
+class User {
+  publicKey = ''
+  inputs: Buffer[] = []
+  response: any = undefined
+  constructor(publicKey: string, inputs: Buffer[]) {
+    this.publicKey = publicKey
+    this.inputs = inputs
+  }
+  async send(response: any) {
+    this.response = response
+    return new Promise((resolve) => {
+      resolve(response)
+    })
+  }
+}
 
 class InputStatus {
   status = ''
@@ -24,6 +39,7 @@ class Input {
 class MockClient {
   postInput = ''
   getInput = ''
+  api = new ApiService()
 
   callbackFunction: null | ((r: any) => any) = null
 
@@ -32,12 +48,18 @@ class MockClient {
   }
 
   async submitContractInput(input: string) {
-    return new Promise((resolve) => {
-      if (JSON.parse(input).method === 'POST') {
-        this.postInput = input
-      }
-      console.log(`MOCK POST: ${this.postInput}`)
-      resolve(new Input(this.postInput))
+    return new Promise(async (resolve) => {
+      console.log(`MOCK POST: ${input}`)
+      const inputs = [Buffer.from(JSON.stringify(input))]
+      const user = new User(
+        'ed2593d14ca75a4970acd3fb8696e345c0baf6a43449ac2be9d8538b00d869dd7e',
+        inputs
+      )
+
+      await this.api.handleRequest(user, JSON.parse(input), true)
+      console.log(user.response)
+
+      resolve(new Input(user.response))
       new Promise(() => {
         setTimeout(() => {
           this.callbackFunction &&
@@ -48,10 +70,15 @@ class MockClient {
   }
 
   async submitContractReadRequest(input: string) {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       console.log(`MOCK GET: ${input}`)
-      this.getInput = input
-      resolve(this.getInput)
+      const inputs = [Buffer.from(JSON.stringify(input))]
+      const user = new User(
+        'ed2593d14ca75a4970acd3fb8696e345c0baf6a43449ac2be9d8538b00d869dd7e',
+        inputs
+      )
+      await this.api.handleRequest(user, JSON.parse(input), true)
+      resolve(user.response)
     })
   }
 }

@@ -1,4 +1,4 @@
-import { Client, Wallet } from 'xrpl'
+import { Client, Wallet } from '@transia/xrpl'
 import { EventEmitter } from './event'
 
 interface DefaultValues {
@@ -55,11 +55,11 @@ export class XrplAccount {
 
     this.#api = new Client(this.#rippledServer, xrplClientOptions)
 
-    this.#api.on('error', (errorCode, errorMessage) => {
+    this.#api.on('error', (errorCode: number, errorMessage: string) => {
       console.log(errorCode + ': ' + errorMessage)
     })
 
-    this.#api.on('disconnected', (code) => {
+    this.#api.on('disconnected', (code: number) => {
       if (this.#maintainConnection) {
         console.log(
           `Connection failure for ${this.#rippledServer} (code:${code})`
