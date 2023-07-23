@@ -1,10 +1,10 @@
 import { validateRequestAgainstRules } from '../../dist/npm/src/rules'
 import { Request, Rules } from '../../dist/npm/src/rules/types'
 import { ChatModel, MessageModel, OwnerModel } from '../../dist/npm/src/models'
-import { convertHexToString, convertStringToHex } from 'xrpl'
+import { convertHexToString, convertStringToHex } from '@transia/xrpl'
 import { prepareRequest } from '../../dist/npm/src/services/api'
 import { EvernodeTestContext, setupClient } from '../integration/util'
-import { decodeMetadata } from '../../dist/npm/src/util/decode'
+import { decodeMetadata } from '@transia/hooks-toolkit/dist/npm/src/libs/binary-models'
 
 console.log(convertHexToString)
 console.log(ChatModel)
@@ -16,7 +16,7 @@ describe('rules - no permissions', () => {
   test('read failure - read|false write|false', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'GET',
       path: '/MasterUserList/1',
@@ -44,7 +44,7 @@ describe('rules - no permissions', () => {
   test('write failure - read|false write|false', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'POST',
       path: '/MasterUserList/1',
@@ -75,7 +75,7 @@ describe('rules - read permissions', () => {
   test('read success - read|true write|false', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'GET',
       path: '/MasterUserList/1',
@@ -101,7 +101,7 @@ describe('rules - read permissions', () => {
   test('write failure - read|true write|false', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'POST',
       path: '/MasterUserList/1',
@@ -132,7 +132,7 @@ describe('rules - read/write permissions', () => {
   test('read success - read|true write|true', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'GET',
       path: '/MasterUserList/1',
@@ -158,7 +158,7 @@ describe('rules - read/write permissions', () => {
   test('write success - read|true write|false', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'POST',
       path: '/MasterUserList/1',
@@ -187,7 +187,7 @@ describe('rules - read/write collection permissions', () => {
   test('read collection failure - read|false write|false', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'GET',
       path: '/MasterUserList/1',
@@ -219,7 +219,7 @@ describe('rules - read/write collection permissions', () => {
   test('write collection failure - read|false write|false', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'POST',
       path: '/MasterUserList/1',
@@ -251,7 +251,7 @@ describe('rules - read/write collection permissions', () => {
   test('read collection success - read|true write|false', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'GET',
       path: '/MasterUserList/1',
@@ -281,7 +281,7 @@ describe('rules - read/write collection permissions', () => {
   test('write collection success - read|true write|true', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'POST',
       path: '/MasterUserList/1',
@@ -311,7 +311,7 @@ describe('rules - read/write collection permissions', () => {
   test('read outside collection failure - read|true write|false', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'GET',
       path: '/Protected/1',
@@ -344,7 +344,7 @@ describe('rules - read/write collection permissions', () => {
   test('write outside collection failure - read|true write|true', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'POST',
       path: '/Protected/1',
@@ -380,7 +380,7 @@ describe('rules - read | auth.uid', () => {
   test('read|auth.uid write|auth.uid global|read|false global|write|false - failure', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'GET',
       path: '/SomeUser/1',
@@ -412,7 +412,7 @@ describe('rules - read | auth.uid', () => {
   test('read|auth.uid write|auth.uid global|read|true global|write|false - success', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'GET',
       path: '/SomeUser/1',
@@ -442,7 +442,7 @@ describe('rules - read | auth.uid', () => {
   test('read|auth.uid write|auth.uid global|read|false global|write|false - failure', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'GET',
       path: '/MasterUserList/1',
@@ -474,7 +474,7 @@ describe('rules - read | auth.uid', () => {
   test('read|auth.uid write|auth.uid global|read|false global|write|false - success', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'GET',
       path: '/MasterUserList/1',
@@ -509,7 +509,7 @@ describe('rules - write | auth.uid', () => {
   test('read|auth.uid write|auth.uid global|read|false global|write|false - failure', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'POST',
       path: '/SomeUser/1',
@@ -541,7 +541,7 @@ describe('rules - write | auth.uid', () => {
   test('read|auth.uid write|auth.uid global|read|true global|write|false - success', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'POST',
       path: '/SomeUser/1',
@@ -571,7 +571,7 @@ describe('rules - write | auth.uid', () => {
   test('read|auth.uid write|auth.uid global|read|false global|write|false - success', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'POST',
       path: '/MasterUserList/1',
@@ -603,7 +603,7 @@ describe('rules - write | auth.uid', () => {
   test('read|auth.uid write|auth.uid global|read|false global|write|false - failure', async () => {
     const request = {
       id: '1',
-      type: 'type',
+      type: 'cloud.lmdb',
       database: 'one',
       method: 'POST',
       path: '/MasterUserList/1',
@@ -648,6 +648,7 @@ describe('rules khan xrpl binary', () => {
     )
     const request = prepareRequest(
       '1',
+      'cloud.lmdb',
       'one',
       'POST',
       `/Messages/${testContext.alice.classicAddress}`,
@@ -689,6 +690,7 @@ describe('rules khan xrpl binary', () => {
     const privateKey = testContext.alice.privateKey
     const request = prepareRequest(
       '1',
+      'cloud.lmdb',
       'one',
       'POST',
       path,
@@ -724,6 +726,7 @@ describe('rules khan xrpl binary', () => {
     const binaryPath = convertStringToHex(path)
     const request = prepareRequest(
       '1',
+      'cloud.lmdb',
       'one',
       'GET',
       path,
@@ -760,6 +763,7 @@ describe('rules khan xrpl binary', () => {
     const binaryPath = convertStringToHex(path)
     const request = prepareRequest(
       '1',
+      'cloud.lmdb',
       'one',
       'GET',
       path,
