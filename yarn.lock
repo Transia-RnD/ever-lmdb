@@ -660,11 +660,13 @@
   dependencies:
     "@sinonjs/commons" "^3.0.0"
 
-"@transia/hooks-toolkit@file:../../xrpl-labs/hooks-toolkit-ts":
-  version "1.0.3"
+"@transia/hooks-toolkit@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@transia/hooks-toolkit/-/hooks-toolkit-1.0.4.tgz#2ab5c0d7302c8043ab25b9a96009a7b9317579d7"
+  integrity sha512-+Mrh23VR48UiHSBhgJ3PSRbHm8UOudXuVc/oV9KyLhl8IFBu9w/ew9oJD/JjGxM1doB7aIuRvEpT+qCLpK2dBQ==
   dependencies:
-    "@transia/xpop-toolkit" "file:../../xrpl-labs/xpop-toolkit"
-    "@transia/xrpl" "^2.7.3-alpha.6"
+    "@transia/xpop-toolkit" "^1.0.2"
+    "@transia/xrpl" "^2.7.3-alpha.9"
     c2wasm-cli "^1.0.6"
     chai "^4.3.7"
     crypto-js "^4.1.1"
@@ -701,18 +703,20 @@
     elliptic "^6.5.4"
     hash.js "^1.0.3"
 
-"@transia/xpop-toolkit@file:../../xrpl-labs/xpop-toolkit":
+"@transia/xpop-toolkit@^1.0.2":
   version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@transia/xpop-toolkit/-/xpop-toolkit-1.0.2.tgz#11f4034ff092c685c791313afdc99dc02b66d83e"
+  integrity sha512-ShP0+UrBtlQ1TYui+2Wll11FjxuPeW3AcC5Wjr5pQIk9BGeJ2Fpm6V+Wng0csQcDd5cd6i2P400p9lLP6bsr3w==
   dependencies:
-    "@transia/xrpl" "^2.7.3-alpha.6"
+    "@transia/xrpl" "^2.7.3-alpha.3"
     axios "^1.4.0"
     crypto-js "^4.1.1"
     dotenv "^16.3.1"
 
-"@transia/xrpl@^2.7.3-alpha.6":
-  version "2.7.3-alpha.6"
-  resolved "https://registry.yarnpkg.com/@transia/xrpl/-/xrpl-2.7.3-alpha.6.tgz#d1d60a5d577e6050a3238edf04fa6bb035c62701"
-  integrity sha512-jG7KDJIojckrCcOF2/V25UzTUb+iCt27JrmDCh0+sqx3V5rEQveycol+KMOc6SY2wvb8TC20lpOxbT88f/wz0g==
+"@transia/xrpl@^2.7.3-alpha.3", "@transia/xrpl@^2.7.3-alpha.9":
+  version "2.7.3-alpha.9"
+  resolved "https://registry.yarnpkg.com/@transia/xrpl/-/xrpl-2.7.3-alpha.9.tgz#c4bafe25df0d77ca4c1aa802a412cdb2f2f9bbca"
+  integrity sha512-BTwBCIyC0pUjszCfHOefb56ToA7P26eNoGXQCIMSaZldbD00YNXIBnUuNC5DukStmj8EPTf7yudG7B5iCS0ZEA==
   dependencies:
     "@transia/ripple-address-codec" "^4.2.8-alpha.0"
     "@transia/ripple-binary-codec" "^1.4.6-alpha.2"
