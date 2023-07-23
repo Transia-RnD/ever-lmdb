@@ -59,11 +59,16 @@ export class DocumentReference {
       const client = await this.col.sdk.client.client
       const response = await client.submitContractReadRequest(inpString)
 
-      if (response.error) {
+      if (response && response.error) {
         throw Error(response.error)
       }
 
-      if (this.modelClass && response.snapshot && response.snapshot.binary) {
+      if (
+        response &&
+        this.modelClass &&
+        response.snapshot &&
+        response.snapshot.binary
+      ) {
         return decodeModel(response.snapshot.binary, this.modelClass)
       }
       return response
