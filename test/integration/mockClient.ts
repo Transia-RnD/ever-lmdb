@@ -39,7 +39,7 @@ class Input {
 class MockClient {
   postInput = ''
   getInput = ''
-  api = new ApiService()
+  api = new ApiService('test-id')
 
   callbackFunction: null | ((r: any) => any) = null
 
@@ -56,7 +56,7 @@ class MockClient {
         inputs
       )
 
-      await this.api.handleRequest(user, JSON.parse(input), true)
+      await this.api.handleRequest('test-id', user, JSON.parse(input), true)
       console.log(user.response)
 
       resolve(new Input(user.response))
@@ -77,7 +77,7 @@ class MockClient {
         'ed2593d14ca75a4970acd3fb8696e345c0baf6a43449ac2be9d8538b00d869dd7e',
         inputs
       )
-      await this.api.handleRequest(user, JSON.parse(input), true)
+      await this.api.handleRequest('test-id', user, JSON.parse(input), true)
       resolve(user.response)
     })
   }

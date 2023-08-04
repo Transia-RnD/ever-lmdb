@@ -172,3 +172,16 @@ When posting your question, please provide as much detail as possible, including
 If you have a question or concern that you would like to address directly with the project maintainers, you can contact us via email at [support@transia.co](support@example.co). We will do our best to respond in a timely manner, but please understand that we may not be able to provide immediate assistance.
 
 Thank you for using our project, and we hope that this information helps you get the support you need.
+
+
+## Google Cloud Logging
+
+1. Create Google Project
+
+2. Create Service Account
+
+- Add Logs Writer Permission
+
+3. Save JSON `credentials.json` into project root
+
+> `LoggerEmitter` uses the root directory and looks for `credentials.json`

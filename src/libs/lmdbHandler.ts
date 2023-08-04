@@ -1,17 +1,20 @@
 import { Dbi, Env } from 'node-lmdb'
+import { LogEmitter } from '../services/logger'
 
 export class LMDBDatabase {
+  logger: LogEmitter
   env: Env
   db: Dbi
   characters: string
   dbCollection: string
   openConnections: number
 
-  constructor(dbCollection: string) {
+  constructor(id: string, dbCollection: string) {
     this.characters =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     this.dbCollection = dbCollection
     this.openConnections = 0
+    this.logger = new LogEmitter(id, 'lmdb')
   }
 
   open() {

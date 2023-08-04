@@ -1,9 +1,10 @@
-import { validateRequestAgainstRules, validateXrplAuth } from '../rules'
+import { RulesService } from '../rules'
 import { LMDBDatabase } from '../libs/lmdbHandler'
 import { Request, Response, Rules } from '../rules/types'
 import fs from 'fs'
 import path from 'path'
 import { convertStringToHex, deriveAddress } from '@transia/xrpl'
+import { LogEmitter } from './logger'
 
 function readFile(filename: string): string {
   const jsonString = fs.readFileSync(path.resolve(__dirname, `${filename}`))
@@ -18,20 +19,28 @@ interface XrplLmdbEntry {
 }
 
 export class DbService {
+  #id: string = null
   #request: Request = null
   #db: LMDBDatabase = null
-  #rules: Rules = null
+  #rules: RulesService = null
+  logger: LogEmitter = null
 
-  constructor(request: Request) {
+  constructor(id: string, request: Request) {
+    const name = 'one'
+    this.#id = id
     this.#request = request
-    this.#db = new LMDBDatabase('one')
+    this.#db = new LMDBDatabase(this.#id, name)
+    this.logger = new LogEmitter(this.#id, 'db')
   }
 
   loadrules(): void {
     try {
-      this.#rules = JSON.parse(readFile(path.join(process.cwd(), 'rules.json')))
+      const rules = JSON.parse(
+        readFile(path.join(process.cwd(), 'rules.json'))
+      ) as Rules
+      this.#rules = new RulesService(this.#id, this.#request, rules, this.#db)
     } catch (error: any) {
-      console.log(error.message)
+      this.logger.error(error.message)
       throw error
     }
   }
@@ -41,7 +50,7 @@ export class DbService {
     const resObj: Response = {}
     try {
       this.#db.open()
-      await validateRequestAgainstRules(this.#request, this.#rules, this.#db)
+      await this.#rules.validateRequestAgainstRules()
       const id = convertStringToHex(this.#request.path)
       const bytes = Buffer.from(
         JSON.stringify({
@@ -64,37 +73,44 @@ export class DbService {
 
   // Gets a db record
   async get(): Promise<Response> {
-    // console.log('DB GET')
+    // this.logger.info('DB GET')
     const resObj: Response = {}
     try {
       this.#db.open()
-      await validateRequestAgainstRules(this.#request, this.#rules, this.#db)
+      this.logger.info('DB: Open')
+
+      await this.#rules.validateRequestAgainstRules()
+      this.logger.info('DB: Validated')
       const id = convertStringToHex(this.#request.path)
       const result = await this.#db.get(id)
       resObj.snapshot = { ...JSON.parse(result) }
       if (resObj.snapshot) {
-        validateXrplAuth(
+        this.#rules.validateXrplAuth(
           resObj.snapshot.binary,
           resObj.snapshot.sig,
           resObj.snapshot.pk,
           deriveAddress(resObj.snapshot.pk)
         )
+        this.logger.info('DB: XRPL VALID')
       }
     } catch (error: any) {
+      this.logger.info('DB: ERROR')
       resObj.error = error.message
     } finally {
+      this.logger.info('DB: FINALLY')
       this.#db.close()
     }
+    this.logger.info('DB: RETURN')
     return resObj
   }
 
   // Update a db record
   async update(): Promise<Response> {
-    // console.log('DB UPDATE')
+    // this.logger.info('DB UPDATE')
     const resObj: Response = {}
     try {
       this.#db.open()
-      await validateRequestAgainstRules(this.#request, this.#rules, this.#db)
+      await this.#rules.validateRequestAgainstRules()
       const id = convertStringToHex(this.#request.path)
       const bytes = Buffer.from(
         JSON.stringify({
@@ -116,12 +132,12 @@ export class DbService {
 
   // Deletes a db record
   async delete(): Promise<Response> {
-    // console.log('DB DELETE')
-    // console.log(id)
+    // this.logger.info('DB DELETE')
+    // this.logger.info(id)
     const resObj: Response = {}
     try {
       this.#db.open()
-      await validateRequestAgainstRules(this.#request, this.#rules, this.#db)
+      await this.#rules.validateRequestAgainstRules()
       const id = convertStringToHex(this.#request.path)
       await this.#db.delete(id)
       resObj.snapshot = { id: id }

@@ -8,6 +8,7 @@ import {
 } from '@transia/hooks-toolkit/dist/npm/src/libs/binary-models'
 import { v4 as uuidv4 } from 'uuid'
 import { generateKey } from '../utils'
+import { LogEmitter } from './logger'
 
 export class EverKeyPair {
   publicKey: string = null
@@ -55,11 +56,13 @@ export class DocumentReference {
 
   async read(request: Request): Promise<BaseModel> {
     try {
+      this.col.sdk.logger.info('SDK: READ')
       const inpString = JSON.stringify(request)
       const client = await this.col.sdk.client.client
       const response = await client.submitContractReadRequest(inpString)
-
+      this.col.sdk.logger.info('SDK: READ RESPONSE')
       if (response && response.error) {
+        this.col.sdk.logger.error('SDK: READ ERROR')
         throw Error(response.error)
       }
 
@@ -69,17 +72,20 @@ export class DocumentReference {
         response.snapshot &&
         response.snapshot.binary
       ) {
+        this.col.sdk.logger.info('SDK: READ DECODE')
         return decodeModel(response.snapshot.binary, this.modelClass)
       }
+      this.col.sdk.logger.info('SDK: READ RESPONSE')
       return response
     } catch (error) {
+      this.col.sdk.logger.info('SDK: READ ERROR')
       throw error
     }
   }
 
   async custom<T extends BaseModel>(method: string, model: T) {
     const path = `/${this.col.path}/${this.col.doc.path}`
-    // console.log(`CUSTOM: ${path}`)
+    // this.logger.info(`CUSTOM: ${path}`)
     const request = prepareRequest(
       uuidv4(),
       'custom',
@@ -96,7 +102,7 @@ export class DocumentReference {
 
   async get() {
     const path = `/${this.col.path}/${this.col.doc.path}`
-    // console.log(`GET: ${path}`)
+    // this.logger.info(`GET: ${path}`)
     const request = prepareRequest(
       uuidv4(),
       'cloud.lmdb',
@@ -112,7 +118,7 @@ export class DocumentReference {
 
   async set<T extends BaseModel>(model: T) {
     const path = `/${this.col.path}/${this.col.doc.path}`
-    // console.log(`SET: ${path}`)
+    // this.logger.info(`SET: ${path}`)
     const request = prepareRequest(
       uuidv4(),
       'cloud.lmdb',
@@ -129,7 +135,7 @@ export class DocumentReference {
 
   async update<T extends BaseModel>(model: T) {
     const path = `/${this.col.path}/${this.col.doc.path}`
-    // console.log(`UPDATE: ${path}`)
+    // this.logger.info(`UPDATE: ${path}`)
     const request = prepareRequest(
       uuidv4(),
       'cloud.lmdb',
@@ -146,7 +152,7 @@ export class DocumentReference {
 
   async delete() {
     const path = `/${this.col.path}/${this.col.doc.path}`
-    // console.log(`DELETE: ${path}`)
+    // this.logger.info(`DELETE: ${path}`)
     const request = prepareRequest(
       uuidv4(),
       'cloud.lmdb',
@@ -166,15 +172,22 @@ export class DocumentReference {
 }
 
 export class Sdk {
+  logger: LogEmitter = null
   client: any = null
   keypair: EverKeyPair = null
   database: string = null
   promiseMap = new Map()
 
-  constructor(keypair: EverKeyPair, client: any, database?: string) {
+  constructor(
+    logger: LogEmitter,
+    keypair: EverKeyPair,
+    client: any,
+    database?: string
+  ) {
     this.database = database ?? 'one'
     this.keypair = keypair
     this.client = client
+    this.logger = logger
   }
 
   collection(path: string) {
@@ -184,17 +197,20 @@ export class Sdk {
   async submit(request: Request) {
     let resolver, rejecter
     try {
+      this.logger.info('SDK: SUBMIT')
       const inpString = JSON.stringify(request)
       this.client.client.submitContractInput(inpString).then((input: any) => {
+        this.logger.info('SDK: SUBMIT INPUT')
         input.submissionStatus.then((s: any) => {
+          this.logger.info('SDK: SUBMIT STATUS')
           if (s.status !== 'accepted') {
-            // console.log(`Ledger_Rejection: ${s.reason}`)
-            throw `Ledger_Rejection: ${s.reason}`
+            this.logger.error(`SDK: Ledger_Rejection: ${s.reason}`)
+            throw Error(`Ledger_Rejection: ${s.reason}`)
           }
-          // console.log(`Ledger_Success`)
+          this.logger.info(`SDK: Ledger_Success`)
         })
       })
-
+      this.logger.info('SDK: SUBMIT PROMISE')
       return new Promise((resolve, reject) => {
         resolver = resolve
         rejecter = reject
@@ -203,8 +219,8 @@ export class Sdk {
           rejecter: rejecter,
         })
       })
-    } catch (error) {
-      console.log(error)
+    } catch (error: any) {
+      this.logger.error(error.message)
       throw error
     }
   }

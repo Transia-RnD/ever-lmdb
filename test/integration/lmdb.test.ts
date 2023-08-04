@@ -34,7 +34,7 @@ describe('Chats/{id}', () => {
     const path = `/Chats/JrqfNImIw4XwsqF7sT3o`
     const binaryPath = convertHexToString(path)
 
-    const api = new ApiService()
+    const api = new ApiService('test-id')
     const isReadOnly = false
 
     // ALICE USER
@@ -86,7 +86,7 @@ describe('Chats/{id}', () => {
     )
     const postChatInputs = [Buffer.from(JSON.stringify(postRequest))]
     aliceUser.inputs = postChatInputs
-    await api.handleRequest(aliceUser, postRequest, isReadOnly)
+    await api.handleRequest('test-id', aliceUser, postRequest, isReadOnly)
 
     // GET - Alice
     const aliceGetRequest = prepareRequest(
@@ -101,7 +101,7 @@ describe('Chats/{id}', () => {
     )
     const aliceGetInputs = [Buffer.from(JSON.stringify(aliceGetRequest))]
     bobUser.inputs = aliceGetInputs
-    await api.handleRequest(aliceUser, aliceGetRequest, isReadOnly)
+    await api.handleRequest('test-id', aliceUser, aliceGetRequest, isReadOnly)
 
     // GET - Bob
     const bobGetRequest = prepareRequest(
@@ -116,7 +116,7 @@ describe('Chats/{id}', () => {
     )
     const bobGetInputs = [Buffer.from(JSON.stringify(bobGetRequest))]
     bobUser.inputs = bobGetInputs
-    await api.handleRequest(bobUser, bobGetRequest, isReadOnly)
+    await api.handleRequest('test-id', bobUser, bobGetRequest, isReadOnly)
 
     // PUT - Alice
     chatModel.owners = [owner1, owner2]
@@ -133,7 +133,7 @@ describe('Chats/{id}', () => {
     )
     const putChatInputs = [Buffer.from(JSON.stringify(putRequest))]
     aliceUser.inputs = putChatInputs
-    await api.handleRequest(aliceUser, putRequest, isReadOnly)
+    await api.handleRequest('test-id', aliceUser, putRequest, isReadOnly)
 
     // GET - Alice
     const getRequest = prepareRequest(
@@ -148,7 +148,7 @@ describe('Chats/{id}', () => {
     )
     const getChatInputs = [Buffer.from(JSON.stringify(getRequest))]
     aliceUser.inputs = getChatInputs
-    await api.handleRequest(aliceUser, getRequest, isReadOnly)
+    await api.handleRequest('test-id', aliceUser, getRequest, isReadOnly)
 
     // DELETE - Alice
     const deleteRequest = prepareRequest(
@@ -164,7 +164,7 @@ describe('Chats/{id}', () => {
     )
     const deleteChatInputs = [Buffer.from(JSON.stringify(deleteRequest))]
     aliceUser.inputs = deleteChatInputs
-    await api.handleRequest(aliceUser, deleteRequest, isReadOnly)
+    await api.handleRequest('test-id', aliceUser, deleteRequest, isReadOnly)
   })
 })
 
@@ -240,7 +240,7 @@ describe('Chats/{id}', () => {
 //     )
 //     const postChatInputs = [Buffer.from(JSON.stringify(postRequest))]
 //     aliceUser.inputs = postChatInputs
-//     await api.handleRequest(aliceUser, postRequest, isReadOnly)
+//     await api.handleRequest('test-id', aliceUser, postRequest, isReadOnly)
 
 //     // GET - Alice
 //     const aliceGetRequest = prepareRequest(
@@ -255,7 +255,7 @@ describe('Chats/{id}', () => {
 //     )
 //     const aliceGetInputs = [Buffer.from(JSON.stringify(aliceGetRequest))]
 //     bobUser.inputs = aliceGetInputs
-//     await api.handleRequest(aliceUser, aliceGetRequest, isReadOnly)
+//     await api.handleRequest('test-id', aliceUser, aliceGetRequest, isReadOnly)
 
 //     // GET - Bob
 //     const bobGetRequest = prepareRequest(
@@ -287,7 +287,7 @@ describe('Chats/{id}', () => {
 //     )
 //     const putChatInputs = [Buffer.from(JSON.stringify(putRequest))]
 //     aliceUser.inputs = putChatInputs
-//     await api.handleRequest(aliceUser, putRequest, isReadOnly)
+//     await api.handleRequest('test-id', aliceUser, putRequest, isReadOnly)
 
 //     // GET - Alice
 //     const getRequest = prepareRequest(
@@ -302,7 +302,7 @@ describe('Chats/{id}', () => {
 //     )
 //     const getChatInputs = [Buffer.from(JSON.stringify(getRequest))]
 //     aliceUser.inputs = getChatInputs
-//     await api.handleRequest(aliceUser, getRequest, isReadOnly)
+//     await api.handleRequest('test-id', aliceUser, getRequest, isReadOnly)
 
 //     // DELETE - Alice
 //     const deleteRequest = prepareRequest(
@@ -318,7 +318,7 @@ describe('Chats/{id}', () => {
 //     )
 //     const deleteChatInputs = [Buffer.from(JSON.stringify(deleteRequest))]
 //     aliceUser.inputs = deleteChatInputs
-//     await api.handleRequest(aliceUser, deleteRequest, isReadOnly)
+//     await api.handleRequest('test-id', aliceUser, deleteRequest, isReadOnly)
 //   })
 // })
 

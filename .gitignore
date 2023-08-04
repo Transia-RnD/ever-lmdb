@@ -68,4 +68,5 @@ scripts/cache
 .eslintrc
 
 mydata
+credentials.json
 rules.json

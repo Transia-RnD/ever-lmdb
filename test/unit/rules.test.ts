@@ -1,16 +1,9 @@
-import { validateRequestAgainstRules } from '../../dist/npm/src/rules'
+import { RulesService } from '../../dist/npm/src/rules'
 import { Request, Rules } from '../../dist/npm/src/rules/types'
-import { ChatModel, MessageModel, OwnerModel } from '../../dist/npm/src/models'
-import { convertHexToString, convertStringToHex } from '@transia/xrpl'
+import { MessageModel } from '../../dist/npm/src/models'
+import { convertStringToHex } from '@transia/xrpl'
 import { prepareRequest } from '../../dist/npm/src/services/api'
 import { EvernodeTestContext, setupClient } from '../integration/util'
-import { decodeMetadata } from '@transia/hooks-toolkit/dist/npm/src/libs/binary-models'
-
-console.log(convertHexToString)
-console.log(ChatModel)
-console.log(OwnerModel)
-console.log(MessageModel)
-console.log(decodeMetadata)
 
 describe('rules - no permissions', () => {
   test('read failure - read|false write|false', async () => {
@@ -36,7 +29,12 @@ describe('rules - no permissions', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
     } catch (error: any) {
       expect(error.message).toBe('Invalid Permissions')
     }
@@ -64,7 +62,12 @@ describe('rules - no permissions', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
     } catch (error: any) {
       expect(error.message).toBe('Invalid Permissions')
     }
@@ -94,9 +97,12 @@ describe('rules - read permissions', () => {
       }
     }`
     const jsonRules = JSON.parse(rules) as Rules
-    expect(await validateRequestAgainstRules(request, jsonRules)).toBe(
-      undefined
+    const rulesService: RulesService = new RulesService(
+      'test-id',
+      request,
+      jsonRules
     )
+    expect(await rulesService.validateRequestAgainstRules()).toBe(undefined)
   })
   test('write failure - read|true write|false', async () => {
     const request = {
@@ -121,7 +127,12 @@ describe('rules - read permissions', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
     } catch (error: any) {
       expect(error.message).toBe('Invalid Permissions')
     }
@@ -151,9 +162,12 @@ describe('rules - read/write permissions', () => {
       }
     }`
     const jsonRules = JSON.parse(rules) as Rules
-    expect(await validateRequestAgainstRules(request, jsonRules)).toBe(
-      undefined
+    const rulesService: RulesService = new RulesService(
+      'test-id',
+      request,
+      jsonRules
     )
+    expect(await rulesService.validateRequestAgainstRules()).toBe(undefined)
   })
   test('write success - read|true write|false', async () => {
     const request = {
@@ -177,9 +191,12 @@ describe('rules - read/write permissions', () => {
       }
     }`
     const jsonRules = JSON.parse(rules) as Rules
-    expect(await validateRequestAgainstRules(request, jsonRules)).toBe(
-      undefined
+    const rulesService: RulesService = new RulesService(
+      'test-id',
+      request,
+      jsonRules
     )
+    expect(await rulesService.validateRequestAgainstRules()).toBe(undefined)
   })
 })
 
@@ -211,7 +228,12 @@ describe('rules - read/write collection permissions', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
     } catch (error: any) {
       expect(error.message).toBe('Invalid Permissions')
     }
@@ -243,7 +265,12 @@ describe('rules - read/write collection permissions', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
     } catch (error: any) {
       expect(error.message).toBe('Invalid Permissions')
     }
@@ -274,9 +301,12 @@ describe('rules - read/write collection permissions', () => {
       }
     }`
     const jsonRules = JSON.parse(rules) as Rules
-    expect(await validateRequestAgainstRules(request, jsonRules)).toBe(
-      undefined
+    const rulesService: RulesService = new RulesService(
+      'test-id',
+      request,
+      jsonRules
     )
+    expect(await rulesService.validateRequestAgainstRules()).toBe(undefined)
   })
   test('write collection success - read|true write|true', async () => {
     const request = {
@@ -304,9 +334,12 @@ describe('rules - read/write collection permissions', () => {
       }
     }`
     const jsonRules = JSON.parse(rules) as Rules
-    expect(await validateRequestAgainstRules(request, jsonRules)).toBe(
-      undefined
+    const rulesService: RulesService = new RulesService(
+      'test-id',
+      request,
+      jsonRules
     )
+    expect(await rulesService.validateRequestAgainstRules()).toBe(undefined)
   })
   test('read outside collection failure - read|true write|false', async () => {
     const request = {
@@ -335,7 +368,12 @@ describe('rules - read/write collection permissions', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
       throw Error('invalid')
     } catch (error: any) {
       expect(error.message).toBe('Invalid Permissions')
@@ -368,7 +406,12 @@ describe('rules - read/write collection permissions', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
       throw Error('invalid')
     } catch (error: any) {
       expect(error.message).toBe('Invalid Permissions')
@@ -404,7 +447,12 @@ describe('rules - read | auth.uid', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
     } catch (error: any) {
       expect(error.message).toBe('Invalid Permissions')
     }
@@ -435,9 +483,12 @@ describe('rules - read | auth.uid', () => {
       }
     }`
     const jsonRules = JSON.parse(rules) as Rules
-    expect(await validateRequestAgainstRules(request, jsonRules)).toBe(
-      undefined
+    const rulesService: RulesService = new RulesService(
+      'test-id',
+      request,
+      jsonRules
     )
+    expect(await rulesService.validateRequestAgainstRules()).toBe(undefined)
   })
   test('read|auth.uid write|auth.uid global|read|false global|write|false - failure', async () => {
     const request = {
@@ -466,7 +517,12 @@ describe('rules - read | auth.uid', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
     } catch (error: any) {
       expect(error.message).toBe('Invalid Xrpl Signature Parameters')
     }
@@ -498,7 +554,12 @@ describe('rules - read | auth.uid', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
     } catch (error: any) {
       expect(error.message).toBe('Invalid Permissions: Invalid Id')
     }
@@ -533,7 +594,12 @@ describe('rules - write | auth.uid', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
     } catch (error: any) {
       expect(error.message).toBe('Invalid Permissions')
     }
@@ -564,9 +630,12 @@ describe('rules - write | auth.uid', () => {
       }
     }`
     const jsonRules = JSON.parse(rules) as Rules
-    expect(await validateRequestAgainstRules(request, jsonRules)).toBe(
-      undefined
+    const rulesService: RulesService = new RulesService(
+      'test-id',
+      request,
+      jsonRules
     )
+    expect(await rulesService.validateRequestAgainstRules()).toBe(undefined)
   })
   test('read|auth.uid write|auth.uid global|read|false global|write|false - success', async () => {
     const request = {
@@ -595,7 +664,12 @@ describe('rules - write | auth.uid', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
     } catch (error: any) {
       expect(error.message).toBe('Invalid Xrpl Signature Parameters')
     }
@@ -627,7 +701,12 @@ describe('rules - write | auth.uid', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
     } catch (error: any) {
       expect(error.message).toBe('Invalid Permissions: Invalid Id')
     }
@@ -673,7 +752,12 @@ describe('rules khan xrpl binary', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
     } catch (error: any) {
       expect(error.message).toBe('Invalid Permissions: Invalid Id')
     }
@@ -714,9 +798,12 @@ describe('rules khan xrpl binary', () => {
       }
     }`
     const jsonRules = JSON.parse(rules) as Rules
-    expect(await validateRequestAgainstRules(request, jsonRules)).toBe(
-      undefined
+    const rulesService: RulesService = new RulesService(
+      'test-id',
+      request,
+      jsonRules
     )
+    expect(await rulesService.validateRequestAgainstRules()).toBe(undefined)
   })
 
   test('read xrpl failure - read|auth.xrpl write|auth.xrpl', async () => {
@@ -750,7 +837,12 @@ describe('rules khan xrpl binary', () => {
     }`
     const jsonRules = JSON.parse(rules) as Rules
     try {
-      await validateRequestAgainstRules(request, jsonRules)
+      const rulesService: RulesService = new RulesService(
+        'test-id',
+        request,
+        jsonRules
+      )
+      await rulesService.validateRequestAgainstRules()
     } catch (error: any) {
       expect(error.message).toBe('Invalid Permissions: Invalid Id')
     }
@@ -786,8 +878,11 @@ describe('rules khan xrpl binary', () => {
       }
     }`
     const jsonRules = JSON.parse(rules) as Rules
-    expect(await validateRequestAgainstRules(request, jsonRules)).toBe(
-      undefined
+    const rulesService: RulesService = new RulesService(
+      'test-id',
+      request,
+      jsonRules
     )
+    expect(await rulesService.validateRequestAgainstRules()).toBe(undefined)
   })
 })
