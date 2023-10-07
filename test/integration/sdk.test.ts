@@ -2,9 +2,6 @@ import { Sdk, EverKeyPair } from '../../dist/npm/src/services/sdk'
 import { ChatModel, OwnerModel } from '../../dist/npm/src/models'
 import { EvernodeTestContext, setupClient } from './util'
 import { MockClientApp } from './mockClient'
-import { LogEmitter } from '../../dist/npm/src/services/logger'
-
-const logger = new LogEmitter('test-id', 'test')
 
 describe('sdk chat test', () => {
   let testContext: EvernodeTestContext
@@ -23,12 +20,12 @@ describe('sdk chat test', () => {
     const bobAddress = testContext.bob.classicAddress
 
     const sdk = new Sdk(
-      logger,
       new EverKeyPair(
         testContext.alice.publicKey,
         testContext.alice.privateKey
       ),
-      hpApp
+      hpApp,
+      'db'
     )
 
     const owner1 = new OwnerModel(aliceAddress)
@@ -52,12 +49,12 @@ describe('sdk chat test', () => {
     const carolAddress = testContext.carol.classicAddress
 
     const sdk = new Sdk(
-      logger,
       new EverKeyPair(
         testContext.alice.publicKey,
         testContext.alice.privateKey
       ),
-      hpApp
+      hpApp,
+      'db'
     )
 
     const owner1 = new OwnerModel(aliceAddress)
@@ -89,12 +86,12 @@ describe('sdk chat test', () => {
     const bobAddress = testContext.bob.classicAddress
 
     const sdk = new Sdk(
-      logger,
       new EverKeyPair(
         testContext.alice.publicKey,
         testContext.alice.privateKey
       ),
-      hpApp
+      hpApp,
+      'db'
     )
 
     const owner1 = new OwnerModel(aliceAddress)

@@ -1,4 +1,4 @@
-import { ApiService } from '../../dist/npm/src/services/api'
+import { ApiService } from 'ever-lmdb-api/dist/npm/src/services/api'
 class User {
   publicKey = ''
   inputs: Buffer[] = []

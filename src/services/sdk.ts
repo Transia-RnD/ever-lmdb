@@ -1,6 +1,4 @@
 import { convertStringToHex } from '@transia/xrpl'
-import { prepareRequest } from './api'
-import { Request } from '../rules/types'
 import {
   BaseModel,
   ModelClass,
@@ -8,7 +6,7 @@ import {
 } from '@transia/hooks-toolkit/dist/npm/src/libs/binary-models'
 import { v4 as uuidv4 } from 'uuid'
 import { generateKey } from '../utils'
-import { LogEmitter } from './logger'
+import { prepareRequest, Request } from './types'
 
 export class EverKeyPair {
   publicKey: string = null
@@ -56,13 +54,13 @@ export class DocumentReference {
 
   async read(request: Request): Promise<BaseModel> {
     try {
-      this.col.sdk.logger.info('SDK: READ')
+      // this.col.sdk.logger.info('SDK: READ')
       const inpString = JSON.stringify(request)
       const client = await this.col.sdk.client.client
       const response = await client.submitContractReadRequest(inpString)
-      this.col.sdk.logger.info('SDK: READ RESPONSE')
+      // this.col.sdk.logger.info('SDK: READ RESPONSE')
       if (response && response.error) {
-        this.col.sdk.logger.error('SDK: READ ERROR')
+        // this.col.sdk.logger.error('SDK: READ ERROR')
         throw Error(response.error)
       }
 
@@ -72,13 +70,13 @@ export class DocumentReference {
         response.snapshot &&
         response.snapshot.binary
       ) {
-        this.col.sdk.logger.info('SDK: READ DECODE')
+        // this.col.sdk.logger.info('SDK: READ DECODE')
         return decodeModel(response.snapshot.binary, this.modelClass)
       }
-      this.col.sdk.logger.info('SDK: READ RESPONSE')
+      // this.col.sdk.logger.info('SDK: READ RESPONSE')
       return response
     } catch (error) {
-      this.col.sdk.logger.info('SDK: READ ERROR')
+      // this.col.sdk.logger.info('SDK: READ ERROR')
       throw error
     }
   }
@@ -172,14 +170,14 @@ export class DocumentReference {
 }
 
 export class Sdk {
-  logger: LogEmitter = null
+  // logger: LogEmitter = null
   client: any = null
   keypair: EverKeyPair = null
   database: string = null
   promiseMap = new Map()
 
   constructor(
-    logger: LogEmitter,
+    // logger: LogEmitter,
     keypair: EverKeyPair,
     client: any,
     database?: string
@@ -187,7 +185,7 @@ export class Sdk {
     this.database = database ?? 'one'
     this.keypair = keypair
     this.client = client
-    this.logger = logger
+    // this.logger = logger
   }
 
   collection(path: string) {
@@ -197,20 +195,20 @@ export class Sdk {
   async submit(request: Request) {
     let resolver, rejecter
     try {
-      this.logger.info('SDK: SUBMIT')
+      // this.logger.info('SDK: SUBMIT')
       const inpString = JSON.stringify(request)
       this.client.client.submitContractInput(inpString).then((input: any) => {
-        this.logger.info('SDK: SUBMIT INPUT')
+        // this.logger.info('SDK: SUBMIT INPUT')
         input.submissionStatus.then((s: any) => {
-          this.logger.info('SDK: SUBMIT STATUS')
+          // this.logger.info('SDK: SUBMIT STATUS')
           if (s.status !== 'accepted') {
-            this.logger.error(`SDK: Ledger_Rejection: ${s.reason}`)
+            // this.logger.error(`SDK: Ledger_Rejection: ${s.reason}`)
             throw Error(`Ledger_Rejection: ${s.reason}`)
           }
-          this.logger.info(`SDK: Ledger_Success`)
+          // this.logger.info(`SDK: Ledger_Success`)
         })
       })
-      this.logger.info('SDK: SUBMIT PROMISE')
+      // this.logger.info('SDK: SUBMIT PROMISE')
       return new Promise((resolve, reject) => {
         resolver = resolve
         rejecter = reject
@@ -220,7 +218,7 @@ export class Sdk {
         })
       })
     } catch (error: any) {
-      this.logger.error(error.message)
+      // this.logger.error(error.message)
       throw error
     }
   }
