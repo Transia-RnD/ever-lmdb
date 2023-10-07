@@ -1,36 +1,6 @@
-import { deriveAddress } from '@transia/xrpl'
 import { Request, Response } from '../rules/types'
 import { DbService } from './db'
-// import { User } from './types'
-import { sign } from '@transia/ripple-keypairs/dist'
 import { LogEmitter } from './logger'
-
-export function prepareRequest(
-  id: string,
-  type: string,
-  database: string,
-  method: string,
-  path: string,
-  binary: string,
-  publicKey: string,
-  privateKey: string,
-  metadata?: Record<string, any>
-) {
-  return {
-    id: id,
-    type: type,
-    database: database,
-    method: method,
-    path: path,
-    metadata: metadata,
-    binary: binary,
-    auth: {
-      uid: deriveAddress(publicKey),
-      signature: sign(binary, privateKey),
-      pk: publicKey,
-    },
-  } as Request
-}
 
 export class ApiService {
   #id: string = null

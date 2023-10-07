@@ -1,4 +1,4 @@
-import { Dbi, Env } from 'node-lmdb'
+import { Dbi, Env, Cursor } from 'node-lmdb'
 import { LogEmitter } from '../services/logger'
 
 export class LMDBDatabase {
@@ -87,6 +87,42 @@ export class LMDBDatabase {
       throw Error('No Data')
     }
     return data.toString()
+  }
+
+  async list(
+    page: number,
+    pageSize: number,
+    collection: string
+  ): Promise<{ key: string; value: string }[]> {
+    if (!this.env) throw new Error('Env connection is not open.')
+    if (!this.db) throw new Error('Database connection is not open.')
+
+    const results: { key: string; value: string }[] = []
+
+    const txn = this.env.beginTxn()
+    const cursor = new Cursor(txn, this.db)
+
+    if (!cursor.goToRange(collection)) {
+      cursor.close()
+      txn.commit()
+      return results
+    }
+
+    do {
+      const key = cursor.getCurrentString()
+      if (key && key.startsWith(collection)) {
+        if (results.length >= page * pageSize) break
+        if (results.length >= (page - 1) * pageSize) {
+          const value = cursor.getCurrentBinary().toString() // convert Buffer to string
+          results.push({ key, value })
+        }
+      }
+    } while (cursor.goToNext())
+
+    cursor.close()
+    txn.commit()
+
+    return results
   }
 
   async update(key: string, buffer: Buffer) {
