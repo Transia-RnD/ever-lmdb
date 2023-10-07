@@ -43,6 +43,36 @@ describe('sdk chat test', () => {
     expect(getResponse.owners[1].account).toBe(owner2.account)
   })
 
+  test('sdk - list', async () => {
+    const aliceAddress = testContext.alice.classicAddress
+    const bobAddress = testContext.bob.classicAddress
+
+    const sdk = new Sdk(
+      new EverKeyPair(
+        testContext.alice.publicKey,
+        testContext.alice.privateKey
+      ),
+      hpApp,
+      'db'
+    )
+
+    const owner1 = new OwnerModel(aliceAddress)
+    const owner2 = new OwnerModel(bobAddress)
+    const chatModel = new ChatModel(owner1.account, [owner1, owner2])
+
+    const chatRef = sdk.collection('Chats').document()
+    chatRef.withConverter(ChatModel)
+    await chatRef.set(chatModel)
+
+    const listResponse = (await chatRef.list()) as ChatModel[]
+    console.log(listResponse)
+
+    expect(listResponse[0].createdBy).toBe(owner1.account)
+    expect(listResponse[0].owners.length).toBe(2)
+    expect(listResponse[0].owners[0].account).toBe(owner1.account)
+    expect(listResponse[0].owners[1].account).toBe(owner2.account)
+  })
+
   test('sdk - update', async () => {
     const aliceAddress = testContext.alice.classicAddress
     const bobAddress = testContext.bob.classicAddress

@@ -52,7 +52,7 @@ export class DocumentReference {
     return this
   }
 
-  async read(request: Request): Promise<BaseModel> {
+  async read(request: Request): Promise<BaseModel | BaseModel[]> {
     try {
       // this.col.sdk.logger.info('SDK: READ')
       const inpString = JSON.stringify(request)
@@ -72,6 +72,16 @@ export class DocumentReference {
       ) {
         // this.col.sdk.logger.info('SDK: READ DECODE')
         return decodeModel(response.snapshot.binary, this.modelClass)
+      }
+      if (response && this.modelClass && response.snapshots) {
+        // this.col.sdk.logger.info('SDK: READ DECODE')
+        const results = []
+        for (let index = 0; index < response.snapshots.length; index++) {
+          results.push(
+            decodeModel(response.snapshots[index].binary, this.modelClass)
+          )
+        }
+        return results
       }
       // this.col.sdk.logger.info('SDK: READ RESPONSE')
       return response
@@ -106,6 +116,22 @@ export class DocumentReference {
       'cloud.lmdb',
       this.col.sdk.database,
       'GET',
+      path,
+      convertStringToHex(path),
+      this.col.sdk.keypair.publicKey,
+      this.col.sdk.keypair.privateKey
+    )
+    return await this.read(request)
+  }
+
+  async list() {
+    const path = `/${this.col.path}/`
+    // this.logger.info(`GET: ${path}`)
+    const request = prepareRequest(
+      uuidv4(),
+      'cloud.lmdb',
+      this.col.sdk.database,
+      'LIST',
       path,
       convertStringToHex(path),
       this.col.sdk.keypair.publicKey,
