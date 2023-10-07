@@ -101,6 +101,43 @@ export class DbService {
       this.#db.close()
     }
     this.logger.info('DB: RETURN')
+    console.log(resObj)
+
+    return resObj
+  }
+
+  // List a db collection
+  async list(): Promise<Response> {
+    this.logger.info('DB LIST')
+    const resObj: Response = {}
+    try {
+      this.#db.open()
+      this.logger.info('DB: Open')
+
+      // await this.#rules.validateRequestAgainstRules()
+      this.logger.info('DB: Validated')
+
+      const collection = convertStringToHex(this.#request.path)
+      const results = await this.#db.list(1, 10, collection)
+      resObj.snapshots = results
+      // if (resObj.snapshot) {
+      //   this.#rules.validateXrplAuth(
+      //     resObj.snapshot.binary,
+      //     resObj.snapshot.sig,
+      //     resObj.snapshot.pk,
+      //     deriveAddress(resObj.snapshot.pk)
+      //   )
+      //   this.logger.info('DB: XRPL VALID')
+      // }
+    } catch (error: any) {
+      this.logger.info('DB: ERROR')
+      resObj.error = error.message
+    } finally {
+      this.logger.info('DB: FINALLY')
+      this.#db.close()
+    }
+    this.logger.info('DB: RETURN')
+    console.log(resObj)
     return resObj
   }
 

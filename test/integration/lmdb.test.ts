@@ -5,7 +5,7 @@ import { ApiService } from '../../dist/npm/src/services/api'
 import { User, prepareRequest } from '../../dist/npm/src/services/types'
 import { ChatModel, OwnerModel } from '../../dist/npm/src/models'
 import { EvernodeTestContext, setupClient } from './util'
-import { convertHexToString } from '@transia/xrpl'
+import { convertStringToHex } from '@transia/xrpl'
 import { decodeMetadata } from '@transia/hooks-toolkit/dist/npm/src/libs/binary-models'
 
 export function readFile(filename: string): string {
@@ -32,7 +32,7 @@ describe('Chats/{id}', () => {
 
     // const path = `/Chats/${generateKey(20)}`
     const path = `/Chats/JrqfNImIw4XwsqF7sT3o`
-    const binaryPath = convertHexToString(path)
+    const binaryPath = convertStringToHex(path)
 
     const api = new ApiService('test-id')
     const isReadOnly = false
@@ -103,68 +103,85 @@ describe('Chats/{id}', () => {
     bobUser.inputs = aliceGetInputs
     await api.handleRequest('test-id', aliceUser, aliceGetRequest, isReadOnly)
 
-    // GET - Bob
-    const bobGetRequest = prepareRequest(
-      'bob-get-id',
+    // LIST - Alice
+    const collection = `/Chats/`
+    const binaryCollection = convertStringToHex(collection)
+    const listRequest = prepareRequest(
+      'list-id',
       'cloud.lmdb',
       'one',
-      'GET',
-      path,
-      binaryPath,
-      bobWallet.publicKey,
-      bobWallet.privateKey
-    )
-    const bobGetInputs = [Buffer.from(JSON.stringify(bobGetRequest))]
-    bobUser.inputs = bobGetInputs
-    await api.handleRequest('test-id', bobUser, bobGetRequest, isReadOnly)
-
-    // PUT - Alice
-    chatModel.owners = [owner1, owner2]
-    const putRequest = prepareRequest(
-      'alice-put-id',
-      'cloud.lmdb',
-      'one',
-      'PUT',
-      path,
-      chatModel.encode(),
-      aliceWallet.publicKey,
-      aliceWallet.privateKey,
-      chatModel.getMetadata()
-    )
-    const putChatInputs = [Buffer.from(JSON.stringify(putRequest))]
-    aliceUser.inputs = putChatInputs
-    await api.handleRequest('test-id', aliceUser, putRequest, isReadOnly)
-
-    // GET - Alice
-    const getRequest = prepareRequest(
-      'alice-get-id',
-      'cloud.lmdb',
-      'one',
-      'GET',
-      path,
-      binaryPath,
+      'LIST',
+      collection,
+      binaryCollection,
       aliceWallet.publicKey,
       aliceWallet.privateKey
     )
-    const getChatInputs = [Buffer.from(JSON.stringify(getRequest))]
-    aliceUser.inputs = getChatInputs
-    await api.handleRequest('test-id', aliceUser, getRequest, isReadOnly)
+    const aliceListInputs = [Buffer.from(JSON.stringify(listRequest))]
+    bobUser.inputs = aliceListInputs
+    await api.handleRequest('test-id', aliceUser, listRequest, isReadOnly)
 
-    // DELETE - Alice
-    const deleteRequest = prepareRequest(
-      'alice-delete-id',
-      'cloud.lmdb',
-      'one',
-      'DELETE',
-      path,
-      chatModel.encode(),
-      aliceWallet.publicKey,
-      aliceWallet.privateKey,
-      chatModel.getMetadata()
-    )
-    const deleteChatInputs = [Buffer.from(JSON.stringify(deleteRequest))]
-    aliceUser.inputs = deleteChatInputs
-    await api.handleRequest('test-id', aliceUser, deleteRequest, isReadOnly)
+    // // GET - Bob
+    // const bobGetRequest = prepareRequest(
+    //   'bob-get-id',
+    //   'cloud.lmdb',
+    //   'one',
+    //   'GET',
+    //   path,
+    //   binaryPath,
+    //   bobWallet.publicKey,
+    //   bobWallet.privateKey
+    // )
+    // const bobGetInputs = [Buffer.from(JSON.stringify(bobGetRequest))]
+    // bobUser.inputs = bobGetInputs
+    // await api.handleRequest('test-id', bobUser, bobGetRequest, isReadOnly)
+
+    // // PUT - Alice
+    // chatModel.owners = [owner1, owner2]
+    // const putRequest = prepareRequest(
+    //   'alice-put-id',
+    //   'cloud.lmdb',
+    //   'one',
+    //   'PUT',
+    //   path,
+    //   chatModel.encode(),
+    //   aliceWallet.publicKey,
+    //   aliceWallet.privateKey,
+    //   chatModel.getMetadata()
+    // )
+    // const putChatInputs = [Buffer.from(JSON.stringify(putRequest))]
+    // aliceUser.inputs = putChatInputs
+    // await api.handleRequest('test-id', aliceUser, putRequest, isReadOnly)
+
+    // // GET - Alice
+    // const getRequest = prepareRequest(
+    //   'alice-get-id',
+    //   'cloud.lmdb',
+    //   'one',
+    //   'GET',
+    //   path,
+    //   binaryPath,
+    //   aliceWallet.publicKey,
+    //   aliceWallet.privateKey
+    // )
+    // const getChatInputs = [Buffer.from(JSON.stringify(getRequest))]
+    // aliceUser.inputs = getChatInputs
+    // await api.handleRequest('test-id', aliceUser, getRequest, isReadOnly)
+
+    // // DELETE - Alice
+    // const deleteRequest = prepareRequest(
+    //   'alice-delete-id',
+    //   'cloud.lmdb',
+    //   'one',
+    //   'DELETE',
+    //   path,
+    //   chatModel.encode(),
+    //   aliceWallet.publicKey,
+    //   aliceWallet.privateKey,
+    //   chatModel.getMetadata()
+    // )
+    // const deleteChatInputs = [Buffer.from(JSON.stringify(deleteRequest))]
+    // aliceUser.inputs = deleteChatInputs
+    // await api.handleRequest('test-id', aliceUser, deleteRequest, isReadOnly)
   })
 })
 

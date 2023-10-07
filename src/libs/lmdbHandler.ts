@@ -89,35 +89,35 @@ export class LMDBDatabase {
     return data.toString()
   }
 
-  async list(
-    page: number,
-    pageSize: number,
-    collection: string
-  ): Promise<{ key: string; value: string }[]> {
-    if (!this.env) throw new Error('Env connection is not open.')
-    if (!this.db) throw new Error('Database connection is not open.')
+  async list(page: number, limit: number, startKey: string) {
+    if (!this.env) throw 'Env connection is not open.'
+    if (!this.db) throw 'Database connection is not open.'
 
-    const results: { key: string; value: string }[] = []
+    const results: any[] = []
+    let key = startKey
+    const endKey =
+      startKey +
+      '4646464646464646464646464646464646464646464646464646464646464646'
+    const skip = (page - 1) * limit
+    let count = 0
 
     const txn = this.env.beginTxn()
     const cursor = new Cursor(txn, this.db)
 
-    if (!cursor.goToRange(collection)) {
-      cursor.close()
-      txn.commit()
-      return results
-    }
-
-    do {
-      const key = cursor.getCurrentString()
-      if (key && key.startsWith(collection)) {
-        if (results.length >= page * pageSize) break
-        if (results.length >= (page - 1) * pageSize) {
-          const value = cursor.getCurrentBinary().toString() // convert Buffer to string
-          results.push({ key, value })
+    for (
+      let found = cursor.goToRange(key);
+      found !== null && found <= endKey;
+      found = cursor.goToNext()
+    ) {
+      if (found.startsWith(startKey)) {
+        if (count >= skip && results.length < limit) {
+          const value = cursor.getCurrentBinary()
+          results.push(JSON.parse(value.toString()))
         }
+        count++
       }
-    } while (cursor.goToNext())
+      key = found
+    }
 
     cursor.close()
     txn.commit()

@@ -178,9 +178,17 @@ export class RulesService {
     pk: string,
     uid: string
   ): void {
-    if (!binary || !signature || !pk) {
+    if (!binary) {
       // this.logger.error('RULES: XRPL Invalid Xrpl Validation')
-      throw Error('Invalid Xrpl Validation')
+      throw Error('Invalid Xrpl Validation `!binary`')
+    }
+    if (!signature) {
+      // this.logger.error('RULES: XRPL Invalid Xrpl Validation')
+      throw Error('Invalid Xrpl Validation `!signature`')
+    }
+    if (!pk) {
+      // this.logger.error('RULES: XRPL Invalid Xrpl Validation')
+      throw Error('Invalid Xrpl Validation `!pk`')
     }
     // this.logger.info('VALIDATE XRPL DATA')
     if (verify(binary, signature, pk) && deriveAddress(pk) === uid) {

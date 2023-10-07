@@ -40,6 +40,9 @@ export class ApiService {
       if (request.method == 'GET') {
         result = await this.#dbService.get()
       }
+      if (request.method == 'LIST') {
+        result = await this.#dbService.list()
+      }
 
       if (isReadOnly) {
         this.logger.info('API: READONLY')

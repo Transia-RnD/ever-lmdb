@@ -18,6 +18,7 @@ export interface Request {
 export interface Response {
   id?: string
   snapshot?: Record<string, any>
+  snapshots?: Record<string, any>[]
   error?: string
 }
 
