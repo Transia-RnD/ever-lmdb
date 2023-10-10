@@ -19,6 +19,7 @@ export class EverKeyPair {
 }
 
 export class CollectionReference {
+  modelClass: any
   path: string = null
   doc: DocumentReference = null
   sdk: Sdk = null
@@ -29,9 +30,62 @@ export class CollectionReference {
     this.sdk = sdk
   }
 
+  withConverter<T extends BaseModel>(
+    modelClass: ModelClass<T>
+  ): CollectionReference {
+    this.modelClass = modelClass
+    return this
+  }
+
   document(path?: string) {
     this.doc = new DocumentReference(path, this)
     return this.doc
+  }
+
+  async list() {
+    const path = `/${this.path}/`
+    // this.logger.info(`GET: ${path}`)
+    const request = prepareRequest(
+      uuidv4(),
+      'cloud.lmdb',
+      this.sdk.database,
+      'LIST',
+      path,
+      convertStringToHex(path),
+      this.sdk.keypair.publicKey,
+      this.sdk.keypair.privateKey
+    )
+    return await this.read(request)
+  }
+
+  async read(request: Request): Promise<BaseModel | BaseModel[]> {
+    try {
+      // this.col.sdk.logger.info('SDK: READ')
+      const inpString = JSON.stringify(request)
+      const client = await this.sdk.client.client
+      const response = await client.submitContractReadRequest(inpString)
+      // this.col.sdk.logger.info('SDK: READ RESPONSE')
+      if (response && response.error) {
+        // this.col.sdk.logger.error('SDK: READ ERROR')
+        throw Error(response.error)
+      }
+
+      if (response && this.modelClass && response.snapshots) {
+        // this.col.sdk.logger.info('SDK: READ DECODE')
+        const results = []
+        for (let index = 0; index < response.snapshots.length; index++) {
+          results.push(
+            decodeModel(response.snapshots[index].binary, this.modelClass)
+          )
+        }
+        return results
+      }
+      // this.col.sdk.logger.info('SDK: READ RESPONSE')
+      return response
+    } catch (error) {
+      // this.col.sdk.logger.info('SDK: READ ERROR')
+      throw error
+    }
   }
 }
 
@@ -73,16 +127,6 @@ export class DocumentReference {
         // this.col.sdk.logger.info('SDK: READ DECODE')
         return decodeModel(response.snapshot.binary, this.modelClass)
       }
-      if (response && this.modelClass && response.snapshots) {
-        // this.col.sdk.logger.info('SDK: READ DECODE')
-        const results = []
-        for (let index = 0; index < response.snapshots.length; index++) {
-          results.push(
-            decodeModel(response.snapshots[index].binary, this.modelClass)
-          )
-        }
-        return results
-      }
       // this.col.sdk.logger.info('SDK: READ RESPONSE')
       return response
     } catch (error) {
@@ -116,22 +160,6 @@ export class DocumentReference {
       'cloud.lmdb',
       this.col.sdk.database,
       'GET',
-      path,
-      convertStringToHex(path),
-      this.col.sdk.keypair.publicKey,
-      this.col.sdk.keypair.privateKey
-    )
-    return await this.read(request)
-  }
-
-  async list() {
-    const path = `/${this.col.path}/`
-    // this.logger.info(`GET: ${path}`)
-    const request = prepareRequest(
-      uuidv4(),
-      'cloud.lmdb',
-      this.col.sdk.database,
-      'LIST',
       path,
       convertStringToHex(path),
       this.col.sdk.keypair.publicKey,

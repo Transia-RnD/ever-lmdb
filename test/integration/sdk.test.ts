@@ -60,11 +60,12 @@ describe('sdk chat test', () => {
     const owner2 = new OwnerModel(bobAddress)
     const chatModel = new ChatModel(owner1.account, [owner1, owner2])
 
-    const chatRef = sdk.collection('Chats').document()
+    const chatsRef = sdk.collection('Chats')
+    const chatRef = chatsRef.document()
     chatRef.withConverter(ChatModel)
     await chatRef.set(chatModel)
 
-    const listResponse = (await chatRef.list()) as ChatModel[]
+    const listResponse = (await chatsRef.list()) as ChatModel[]
     console.log(listResponse)
 
     expect(listResponse[0].createdBy).toBe(owner1.account)
