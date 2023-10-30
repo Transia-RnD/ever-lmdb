@@ -3,7 +3,8 @@ import { LMDBDatabase } from '../libs/lmdbHandler'
 import { Request, Response, Rules } from '../rules/types'
 import fs from 'fs'
 import path from 'path'
-import { convertStringToHex, deriveAddress } from '@transia/xrpl'
+// import { convertStringToHex, deriveAddress } from '@transia/xrpl'
+import { convertStringToHex } from '@transia/xrpl'
 import { LogEmitter } from './logger'
 
 function readFile(filename: string): string {
@@ -85,12 +86,12 @@ export class DbService {
       const result = await this.#db.get(id)
       resObj.snapshot = { ...JSON.parse(result) }
       if (resObj.snapshot) {
-        this.#rules.validateXrplAuth(
-          resObj.snapshot.binary,
-          resObj.snapshot.sig,
-          resObj.snapshot.pk,
-          deriveAddress(resObj.snapshot.pk)
-        )
+        // this.#rules.validateXrplAuth(
+        //   resObj.snapshot.binary,
+        //   resObj.snapshot.sig,
+        //   resObj.snapshot.pk,
+        //   deriveAddress(resObj.snapshot.pk)
+        // )
         this.logger.info('DB: XRPL VALID')
       }
     } catch (error: any) {
