@@ -2225,7 +2225,7 @@ eventid@^2.0.0:
   dependencies:
     uuid "^8.0.0"
 
-ever-lmdb-api@/Users/denisangell/projects/transia/ever-lmdb-api:
+"ever-lmdb-api@file:../ever-lmdb-api":
   version "0.0.1"
   dependencies:
     "@google-cloud/logging" "^10.5.0"

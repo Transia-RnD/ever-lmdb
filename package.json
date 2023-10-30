@@ -1,6 +1,6 @@
 {
   "name": "ever-lmdb-sdk",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "",
   "scripts": {
     "lint": "eslint ./src/**/* --ext .ts",
@@ -24,13 +24,13 @@
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.7.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "ever-lmdb-api": "/Users/denisangell/projects/transia/ever-lmdb-api",
     "jest": "^29.5.0",
     "prettier": "^2.8.4",
     "ts-jest": "^29.0.5"
   },
   "dependencies": {
     "@transia/hooks-toolkit": "^1.0.5",
-    "ever-lmdb-api": "/Users/denisangell/projects/transia/ever-lmdb-api",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5",
     "uuidv4": "^6.2.13"

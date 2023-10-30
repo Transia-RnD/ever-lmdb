@@ -22,12 +22,28 @@ export class CollectionReference {
   modelClass: any
   path: string = null
   doc: DocumentReference = null
+  parent: CollectionReference = null
   sdk: Sdk = null
 
-  constructor(path: string, doc?: DocumentReference | null, sdk?: Sdk | null) {
+  constructor(
+    path: string,
+    doc?: DocumentReference | null,
+    parent?: CollectionReference,
+    sdk?: Sdk | null
+  ) {
     this.path = path
     this.doc = doc
+    this.parent = parent
     this.sdk = sdk
+  }
+
+  getPath() {
+    let path = `/${this.path}`
+    if (this.parent) {
+      console.log(this.parent)
+      path = `/${this.parent.path}/${this.doc.path}` + path
+    }
+    return path
   }
 
   withConverter<T extends BaseModel>(
@@ -38,13 +54,12 @@ export class CollectionReference {
   }
 
   document(path?: string) {
-    this.doc = new DocumentReference(path, this)
-    return this.doc
+    return new DocumentReference(path, this)
   }
 
   async list() {
-    const path = `/${this.path}/`
-    // this.logger.info(`GET: ${path}`)
+    const path = this.getPath()
+    console.log(`LIST: ${path}`)
     const request = prepareRequest(
       uuidv4(),
       'cloud.lmdb',
@@ -99,6 +114,14 @@ export class DocumentReference {
     this.col = col
   }
 
+  getPath() {
+    let path = `/${this.col.path}/${this.path}`
+    if (this.col.parent) {
+      path = `/${this.col.parent.path}/${this.col.doc.path}` + path
+    }
+    return path
+  }
+
   withConverter<T extends BaseModel>(
     modelClass: ModelClass<T>
   ): DocumentReference {
@@ -136,8 +159,8 @@ export class DocumentReference {
   }
 
   async custom<T extends BaseModel>(method: string, model: T) {
-    const path = `/${this.col.path}/${this.col.doc.path}`
-    // this.logger.info(`CUSTOM: ${path}`)
+    const path = this.getPath()
+    console.log(`CUSTOM: ${path}`)
     const request = prepareRequest(
       uuidv4(),
       'custom',
@@ -153,8 +176,8 @@ export class DocumentReference {
   }
 
   async get() {
-    const path = `/${this.col.path}/${this.col.doc.path}`
-    // this.logger.info(`GET: ${path}`)
+    const path = this.getPath()
+    console.log(`GET: ${path}`)
     const request = prepareRequest(
       uuidv4(),
       'cloud.lmdb',
@@ -169,8 +192,8 @@ export class DocumentReference {
   }
 
   async set<T extends BaseModel>(model: T) {
-    const path = `/${this.col.path}/${this.col.doc.path}`
-    // this.logger.info(`SET: ${path}`)
+    const path = this.getPath()
+    console.log(`SET: ${path}`)
     const request = prepareRequest(
       uuidv4(),
       'cloud.lmdb',
@@ -186,8 +209,8 @@ export class DocumentReference {
   }
 
   async update<T extends BaseModel>(model: T) {
-    const path = `/${this.col.path}/${this.col.doc.path}`
-    // this.logger.info(`UPDATE: ${path}`)
+    const path = this.getPath()
+    console.log(`UPDATE: ${path}`)
     const request = prepareRequest(
       uuidv4(),
       'cloud.lmdb',
@@ -203,7 +226,7 @@ export class DocumentReference {
   }
 
   async delete() {
-    const path = `/${this.col.path}/${this.col.doc.path}`
+    const path = this.getPath()
     // this.logger.info(`DELETE: ${path}`)
     const request = prepareRequest(
       uuidv4(),
@@ -219,7 +242,7 @@ export class DocumentReference {
   }
 
   collection(path: string) {
-    this.col = new CollectionReference(path, this)
+    return new CollectionReference(path, this, this.col, this.col.sdk)
   }
 }
 
@@ -243,7 +266,7 @@ export class Sdk {
   }
 
   collection(path: string) {
-    return new CollectionReference(path, null, this)
+    return new CollectionReference(path, null, null, this)
   }
 
   async submit(request: Request) {
