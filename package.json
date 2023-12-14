@@ -1,6 +1,6 @@
 {
-  "name": "ever-lmdb-api",
-  "version": "0.0.2",
+  "name": "@transia/ever-lmdb-api",
+  "version": "0.0.3",
   "description": "",
   "scripts": {
     "lint": "eslint ./src/**/* --ext .ts",
@@ -33,10 +33,14 @@
   },
   "dependencies": {
     "@google-cloud/logging": "^10.5.0",
-    "@transia/hooks-toolkit": "^1.0.4",
-    "@transia/xrpl": "^2.7.3-alpha.9",
+    "@transia/hooks-toolkit": "^1.0.8",
+    "@transia/xrpl": "^2.7.3-alpha.20",
     "crypto-browserify": "^3.12.0",
     "node-lmdb": "^0.9.7",
     "uuidv4": "^6.2.13"
+  },
+  "engines": {
+    "node": ">=16.0.0 < 18.0.0",
+    "npm": ">=7.0.0 < 9.0.0"
   }
 }
