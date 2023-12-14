@@ -816,16 +816,32 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-2.0.0.tgz#f544a148d3ab35801c1f633a7441fd87c2e484bf"
   integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
-"@transia/hooks-toolkit@^1.0.4", "@transia/hooks-toolkit@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@transia/hooks-toolkit/-/hooks-toolkit-1.0.5.tgz#42a7cd20e3eb66e90136e8cb293e08b33365ce16"
-  integrity sha512-Km0NXzusYX9H7u6DgDC0vcCUHSqZjS78+6dnAsc0ql1zR1jlviaVbaxbCMxw7cGrJxLY6vCt6N2oGhgkaAZ2tQ==
+"@transia/ever-lmdb-api@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@transia/ever-lmdb-api/-/ever-lmdb-api-0.0.3.tgz#a64ccc1d093da87ae80600d032ada8ecb22b1239"
+  integrity sha512-zQ8skxhdlfsi/q3E31by1caXijPlyZY4uURp/nNXD/0IBSVbB2AhdiBsF2B09lChU+deeoG0aBEgYW44iXms1Q==
   dependencies:
-    "@transia/xpop-toolkit" "^1.0.2"
-    "@transia/xrpl" "^2.7.3-alpha.10"
+    "@google-cloud/logging" "^10.5.0"
+    "@transia/hooks-toolkit" "^1.0.8"
+    "@transia/xrpl" "^2.7.3-alpha.20"
+    crypto-browserify "^3.12.0"
+    node-lmdb "^0.9.7"
+    uuidv4 "^6.2.13"
+
+"@transia/hooks-toolkit@^1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@transia/hooks-toolkit/-/hooks-toolkit-1.0.8.tgz#9cda575bdea85627a2cf6dc2b1607048a32599be"
+  integrity sha512-VomZXjs+ZIyyX/kq65C5PSsfE6tCPtg3xW6haT3W3oQHLSKxxp9vLvaYyWPWJJ+jxActHA8LtDmq8wiTUZBf1Q==
+  dependencies:
+    "@transia/xpop-toolkit" "^1.0.4"
+    "@transia/xrpl" "^2.7.3-alpha.19"
+    "@types/create-hash" "^1.2.4"
+    "@types/elliptic" "^6.4.16"
     c2wasm-cli "^1.0.6"
     chai "^4.3.7"
+    create-hash "^1.2.0"
     crypto-js "^4.1.1"
+    elliptic "^6.5.4"
     winston "^3.10.0"
 
 "@transia/ripple-address-codec@^4.2.8-alpha.0":
@@ -836,10 +852,10 @@
     base-x "^3.0.9"
     create-hash "^1.1.2"
 
-"@transia/ripple-binary-codec@^1.4.6-alpha.4":
-  version "1.4.6-alpha.4"
-  resolved "https://registry.yarnpkg.com/@transia/ripple-binary-codec/-/ripple-binary-codec-1.4.6-alpha.4.tgz#6ab8a7f427890df6ffd067c431dfcc702ae06cb7"
-  integrity sha512-aMQszXtkCQV1lfIek0doIVE6TqITxoXX78yHCRZ6/HWckW7kS5OTynQBCXpfZA84Y1qq9dW1FscZ2uNLdCBB/A==
+"@transia/ripple-binary-codec@^1.4.6-alpha.6":
+  version "1.4.6-alpha.6"
+  resolved "https://registry.yarnpkg.com/@transia/ripple-binary-codec/-/ripple-binary-codec-1.4.6-alpha.6.tgz#ba49195a5a28e61709bc29980b4d4e546f01b3fd"
+  integrity sha512-F3ELxiDqONAmqJgC08Z9M5FbltFWHtecwrb0vtheBPqz7JkYL9wxBXUZQekbVejYKS4Cr+sD5sFchqsDAA+0AQ==
   dependencies:
     "@transia/ripple-address-codec" "^4.2.8-alpha.0"
     assert "^2.0.0"
@@ -859,24 +875,25 @@
     elliptic "^6.5.4"
     hash.js "^1.0.3"
 
-"@transia/xpop-toolkit@^1.0.2":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@transia/xpop-toolkit/-/xpop-toolkit-1.0.3.tgz#c0f59c1a18b684ef888a7c084b9df23e4e08da2a"
-  integrity sha512-epRJHp5BPkB7MwZ1t6hE+4Th64DeIB8O1oTLm79hU9ZS/hgZChE6PLJdkl2781cVercXaYP1CQ0+hRHbYDShEQ==
+"@transia/xpop-toolkit@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@transia/xpop-toolkit/-/xpop-toolkit-1.0.4.tgz#41b46eaf443d7c7a5e612950a3104b1e43f890ef"
+  integrity sha512-IzNFNoC2XYz/lBmkOpra3l5o6/cMF8Tdr05gBvglWj5zXlD5GOfaYb9kcc8+LyDkjT9hsr6Cyqj4I15+cOQXmw==
   dependencies:
-    "@transia/xrpl" "^2.7.3-alpha.15"
+    "@transia/xrpl" "^2.7.3-alpha.16"
+    "@types/base-64" "^1.0.0"
     axios "^1.4.0"
     chai "^4.3.7"
     crypto-js "^4.1.1"
     dotenv "^16.3.1"
 
-"@transia/xrpl@^2.7.3-alpha.10", "@transia/xrpl@^2.7.3-alpha.15", "@transia/xrpl@^2.7.3-alpha.9":
-  version "2.7.3-alpha.16"
-  resolved "https://registry.yarnpkg.com/@transia/xrpl/-/xrpl-2.7.3-alpha.16.tgz#88933ef15174510c66712c99a92c9e7480909313"
-  integrity sha512-djVkdoTnRgCoLsCJQH7tNhKywN5J5SrBsz7anDQcNGZZkrp9dFVxUPV2XxiaAR+5wd5OQaNyFjmagGmeu6ey7w==
+"@transia/xrpl@^2.7.3-alpha.16", "@transia/xrpl@^2.7.3-alpha.19", "@transia/xrpl@^2.7.3-alpha.20":
+  version "2.7.3-alpha.20"
+  resolved "https://registry.yarnpkg.com/@transia/xrpl/-/xrpl-2.7.3-alpha.20.tgz#288e380c96b7ce2ba0fcdefc2a40487702213911"
+  integrity sha512-eCAGlAKjE5oXEUuDtJvSCywmRDb8BStSUu7U9TbG+OaPD6TwZjL4j4kt6Pxb2HJleg7aPsWybIMZgj1YBIVdag==
   dependencies:
     "@transia/ripple-address-codec" "^4.2.8-alpha.0"
-    "@transia/ripple-binary-codec" "^1.4.6-alpha.4"
+    "@transia/ripple-binary-codec" "^1.4.6-alpha.6"
     "@transia/ripple-keypairs" "^1.1.8-alpha.0"
     bignumber.js "^9.0.0"
     bip32 "^2.0.6"
@@ -937,6 +954,32 @@
   integrity sha512-TBOjqAGf0hmaqRwpii5LLkJLg7c6OMm4nHLmpsUxwk9bBHtoTC6dAHdVWdGv4TBxj2CZOZY8Xfq8WmfoVi7n4Q==
   dependencies:
     "@babel/types" "^7.20.7"
+
+"@types/base-64@^1.0.0":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@types/base-64/-/base-64-1.0.2.tgz#f7bc80d242306f20c57f076d79d1efe2d31032ca"
+  integrity sha512-uPgKMmM9fmn7I+Zi6YBqctOye4SlJsHKcisjHIMWpb2YKZRc36GpKyNuQ03JcT+oNXg1m7Uv4wU94EVltn8/cw==
+
+"@types/bn.js@*":
+  version "5.1.5"
+  resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-5.1.5.tgz#2e0dacdcce2c0f16b905d20ff87aedbc6f7b4bf0"
+  integrity sha512-V46N0zwKRF5Q00AZ6hWtN0T8gGmDUaUzLWQvHFo5yThtVwK/VCenFY3wXVbOvNfajEpsTfQM4IN9k/d6gUVX3A==
+  dependencies:
+    "@types/node" "*"
+
+"@types/create-hash@^1.2.4":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@types/create-hash/-/create-hash-1.2.6.tgz#ef9de147f4bf7d3fcfded4862726de949d8d44f4"
+  integrity sha512-/VIViZZAK3rAFvfGbWmcLaxwKfmU213W/XL2cr5VE0ac44jE5ky7+sHl54OJhd+bTz7sqi+Ev//8RU1F/S/ZJQ==
+  dependencies:
+    "@types/node" "*"
+
+"@types/elliptic@^6.4.16":
+  version "6.4.18"
+  resolved "https://registry.yarnpkg.com/@types/elliptic/-/elliptic-6.4.18.tgz#bc96e26e1ccccbabe8b6f0e409c85898635482e1"
+  integrity sha512-UseG6H5vjRiNpQvrhy4VF/JXdA3V/Fp5amvveaL+fs28BZ6xIKJBPnUPRlEaZpysD9MbpfaLi8lbl7PGUAkpWw==
+  dependencies:
+    "@types/bn.js" "*"
 
 "@types/glob@*":
   version "8.1.0"
@@ -2226,11 +2269,11 @@ eventid@^2.0.0:
     uuid "^8.0.0"
 
 "ever-lmdb-api@file:../ever-lmdb-api":
-  version "0.0.1"
+  version "0.0.3"
   dependencies:
     "@google-cloud/logging" "^10.5.0"
-    "@transia/hooks-toolkit" "^1.0.4"
-    "@transia/xrpl" "^2.7.3-alpha.9"
+    "@transia/hooks-toolkit" "^1.0.8"
+    "@transia/xrpl" "^2.7.3-alpha.20"
     crypto-browserify "^3.12.0"
     node-lmdb "^0.9.7"
     uuidv4 "^6.2.13"
